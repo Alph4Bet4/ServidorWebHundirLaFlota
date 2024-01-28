@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class Partida implements Serializable {
 
+	int idPartida;
 	Tablero tableroJugador1;
 	Tablero tableroJugador2;
 	Usuario jugador1;
@@ -22,8 +23,9 @@ public class Partida implements Serializable {
 	 * @param isTerminada
 	 * @param nombreJugadorGanador
 	 */
-	public Partida(Tablero tableroJugador1, Tablero tableroJugador2, Usuario jugador1, Usuario jugador2,
+	public Partida(int idPartida, Tablero tableroJugador1, Tablero tableroJugador2, Usuario jugador1, Usuario jugador2,
 			int cantidadMovimientos, boolean isTerminada, String nombreJugadorGanador) {
+		this.idPartida = idPartida;
 		this.tableroJugador1 = tableroJugador1;
 		this.tableroJugador2 = tableroJugador2;
 		this.jugador1 = jugador1;
@@ -31,6 +33,16 @@ public class Partida implements Serializable {
 		this.cantidadMovimientos = cantidadMovimientos;
 		this.isTerminada = isTerminada;
 		this.nombreJugadorGanador = nombreJugadorGanador;
+	}
+
+
+	public int getIdPartida() {
+		return idPartida;
+	}
+
+
+	public void setIdPartida(int idPartida) {
+		this.idPartida = idPartida;
 	}
 
 

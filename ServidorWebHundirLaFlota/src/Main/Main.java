@@ -32,14 +32,14 @@ public class Main {
 		listaPartidas = conexionBBDD.buscarInformacionSobrePartidasTerminadas();
 		contenedorDatos.setListaPartidasTerminadas(listaPartidas);
 
-		abrirServidor();
+		abrirServidor(contenedorDatos);
 	}
 
 	public static String mostrarInformacionPantalla() {
 		return "El servidor se encuentra abierto en el puerto 5000\r\n" + "1. http://localhost:5000\r\n";
 	}
 
-	public static void abrirServidor() {
+	public static void abrirServidor(ContenedorDatos contenedor) {
 		ServerSocket servidor = null;
 		try {
 			// Abrimos el servidor
@@ -54,7 +54,7 @@ public class Main {
 
 				// Aceptamos las conexiones
 				conexion = servidor.accept();
-				HiloCliente hiloCliente = new HiloCliente(conexion);				
+				HiloCliente hiloCliente = new HiloCliente(conexion, contenedor);				
 				hiloCliente.start();
 				
 			} catch (IOException e) {
@@ -62,9 +62,7 @@ public class Main {
 			}
 		}
 
-		// TODO preguntar si esto es lo que buscan o hacer una clase donde se pase todos
-		// los datos y mediante un while true se vayan metiendo más clases para la
-		// escucha
+		// TODO preguntar si esto es lo que busca
 	}
 
 }

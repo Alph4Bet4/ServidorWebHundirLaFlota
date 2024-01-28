@@ -362,7 +362,7 @@ public class ConexionABBDD {
 					tableroJugador2 = buscarInformacionTablero(idTablero, idUsuarioEnemigo, idUsuario,
 							lugarJugadorPropio);
 
-					nuevaPartida = new Partida(tableroJugador1, tableroJugador2, usuarioPropio, usuarioEnemigo,
+					nuevaPartida = new Partida(idPartida, tableroJugador1, tableroJugador2, usuarioPropio, usuarioEnemigo,
 							movimientosTotales, isTerminada, jugadorGanador);
 					listaPartidas.add(nuevaPartida);
 				}
