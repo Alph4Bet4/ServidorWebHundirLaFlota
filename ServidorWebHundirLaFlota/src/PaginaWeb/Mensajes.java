@@ -1,4 +1,4 @@
-package PaginaWebGet;
+package PaginaWeb;
 
 /**
  *
