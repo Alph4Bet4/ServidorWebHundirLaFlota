@@ -50,6 +50,7 @@ public class ServidorHTTP {
 				}
 			}
 			System.out.println("");
+			
 			comprobarPeticion(peticion, escritor);
 
 		} catch (IOException e) {
@@ -61,19 +62,25 @@ public class ServidorHTTP {
 	public static void comprobarPeticion(String peticion, PrintWriter escritor) {
 
 		String errorPeticion = peticion.substring(3, peticion.lastIndexOf("HTTP"));
+		
 
 		if (errorPeticion.equals("/?") == false) {
 			if (peticion.startsWith("GET")) {
-
+				//Cortamos para ver la peticion
+				peticion = peticion.substring(3, peticion.lastIndexOf("HTTP"));
+				System.out.println("\t\t\t\t\t" + peticion);
+				
 				if (peticion.length() == 0 || peticion.equals("/") || peticion.equals("/index")) {
 					mostrarIndexGet(peticion, escritor);
-				}
-
-				if (peticion.equals("/formularioGet")) {
+				} else if (peticion.equals("/formularioGet")) {
 					mostrarPartidasTerminadasGet(peticion, escritor);
 				}
 
+
 			} else if (peticion.startsWith("POST")) {
+				//Cortamos para ver la peticion
+				peticion = peticion.substring(4, peticion.lastIndexOf("HTTP"));
+				System.out.println("\t\t\t\t\t" + peticion);
 				System.out.println("Un usuario ha intentado hacer una peticion POST en el servidor de GET");
 			}
 
@@ -93,8 +100,6 @@ public class ServidorHTTP {
 		BufferedReader lector = null;
 		String linea = "";
 		String html = "";
-
-		peticion = peticion.substring(3, peticion.lastIndexOf("HTTP"));
 
 		try {
 			ficheroALeer = new FileReader("index.html");
@@ -142,8 +147,6 @@ public class ServidorHTTP {
 
 		listaPartidas = contenedorDatos.getListaPartidasTerminadas();
 
-		peticion = peticion.substring(3, peticion.lastIndexOf("HTTP"));
-
 		try {
 			ficheroALeer = new FileReader("ListaPartidasGet.html");
 			lector = new BufferedReader(ficheroALeer);
@@ -155,9 +158,35 @@ public class ServidorHTTP {
 			}
 
 			for (Partida partida : listaPartidas) {
-				html = html.concat("<table style=\"border: 1px solid black;\">");
-				
+				html = html.concat("<div style=\"padding: 5px;\">");
+				html = html.concat("<table style=\"border: 3px solid black; padding: 10px;\">");
+				html = html.concat("<tr>");
+				html = html.concat("<th>ID Partida:</th>");
+				html = html.concat("<th style=\"border: 1px solid black;\">Jugadores</th>");
+				html = html.concat("<th style=\"padding: 10px; border: 1px solid black;\">Ganador:</th>");
+				html = html.concat("</tr>");
+				html = html.concat("<tr>");
+				html = html.concat("<td>" + partida.getIdPartida() + "</td>");
+				html = html.concat("<td style=\"border: 1px solid black; padding: 5px;\">" + partida.getJugador1().getNombre()
+						+ " vs " + partida.getJugador2().getNombre() + "</td>");
+				html = html.concat("<td style=\"padding: 10px; border: 1px solid black;\">"
+						+ partida.getNombreJugadorGanador() + "</td>");
+				html = html.concat("</tr>");
+				html = html.concat("</table>");
+				html = html.concat("</div>");
 			}
+
+			html = html.concat("<form action=\"/Partida\" method=\"get\" style=\"padding: 5px;\">");
+			html = html.concat("<p>Seleccione partida a ver:</p>");
+			html = html.concat("<select name=\"idPartida\">");
+
+			for (Partida partida : listaPartidas) {
+				// Muestra todas las partidas
+				html = html.concat(
+						"<option value=\"" + partida.getIdPartida() + "\">" + partida.getIdPartida() + "</option>");
+			}
+			html = html.concat("<input type=\"submit\" value=\"Ver partida\">");
+			html = html.concat("</form>");
 
 			html = html.concat("</body>" + "</html>");
 			System.out.println(html);
@@ -192,10 +221,14 @@ public class ServidorHTTP {
 			escritor.println("\n");
 			escritor.println(htmlMostrar);
 			// Hacemos un flush por si acaso
-			escritor.flush();
+//			escritor.flush();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public static void verPartidaTerminada() {
+		//TODO
 	}
 }
