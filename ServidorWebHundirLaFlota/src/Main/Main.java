@@ -1,14 +1,19 @@
 /**
  * 
  */
-package MainGet;
+package Main;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
+import Clases.HiloCliente;
+import Clases.Partida;
 import Clases.Usuario;
 import Consultas.ConexionABBDD;
-import PaginaWebGet.ServidorHTTP;
+import Contenedor.ContenedorDatos;
+import PaginaWeb.ServidorHTTP;
 
 /**
  * 
@@ -19,33 +24,45 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ServerSocket servidor = null;
-		Socket conexion = null;
+		ContenedorDatos contenedorDatos = new ContenedorDatos();
+		ArrayList<Partida> listaPartidas = new ArrayList<>();
 		System.out.println(mostrarInformacionPantalla());
-		ConexionABBDD conexionBBDD = new ConexionABBDD(); // TODO cambiar dentro de la conexion bbdd que haga una
-															// consulta con todas las partidas finalizadas y debe
-															// mostrar ambos tableros
+		ConexionABBDD conexionBBDD = new ConexionABBDD();
 
-		try {
-			servidor = new ServerSocket(5000);
+		listaPartidas = conexionBBDD.buscarInformacionSobrePartidasTerminadas();
+		contenedorDatos.setListaPartidasTerminadas(listaPartidas);
 
-			while (true) {
-				conexion = servidor.accept();
-				System.out.println("Un usuario ha hecho una conexion: " + conexion.getLocalAddress());
-
-				ServidorHTTP servidorHTTP = new ServidorHTTP();
-				servidorHTTP.recibirPeticion(conexion);
-
-				conexion.close();
-				System.out.println("Conexión cerrada");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		abrirServidor(contenedorDatos);
 	}
 
 	public static String mostrarInformacionPantalla() {
 		return "El servidor se encuentra abierto en el puerto 5000\r\n" + "1. http://localhost:5000\r\n";
 	}
+
+	public static void abrirServidor(ContenedorDatos contenedor) {
+		ServerSocket servidor = null;
+		try {
+			// Abrimos el servidor
+			servidor = new ServerSocket(5000);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		while (true) {
+			Socket conexion = null;
+			try {
+
+				// Aceptamos las conexiones
+				conexion = servidor.accept();
+				HiloCliente hiloCliente = new HiloCliente(conexion, contenedor);				
+				hiloCliente.start();
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		// TODO preguntar si esto es lo que busca
+	}
+
 }

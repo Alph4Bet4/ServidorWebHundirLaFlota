@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Lista Partidas</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+</head>
+
+<body>
+    <h1 style="text-align: center;">Lista Partidas Terminadas con Get</h1>
+
+    <!-- Ponerlo auto-->
+    <table style="border: 3px solid black;">
+        <tr>
+            <th>ID Partida:</th>
+            <th style="border: 1px solid black;">Jugadores</th>
+            <th style="padding: 10px; border: 1px solid black;">Ganador:</th>
+            <th style="padding-left: 70px;">Resultado:</th>
+        </tr>
+        <tr>
+            <td>##ID PARTIDA</td>
+            <td style="border: 1px solid black; padding: 5px;">##JUGADOR1 vs ##JUGADOR2</td>
+            <td style="padding: 10px; border: 1px solid black;">##GANADOR</td>
+        </tr>
+    </table>
+
+
+    <form action="/Partida" method="get" style="padding: 5px;">
+        <p>Seleccione partida a ver:</p>
+        <select name="idPartida">
+            <!-- Ponerlo auto-->
+            <option value="##IDPARTIDA">##IDPARTIDA</option>
+
+        </select>
+        <input type="submit" value="Ver partida">
+    </form>
+
+</body>
+
+</html>

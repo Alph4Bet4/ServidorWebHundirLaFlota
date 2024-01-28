@@ -16,13 +16,13 @@ import Clases.*;
  * 
  */
 public class ConexionABBDD {
-	
+
 	private String nombreBaseDatos = "hundirlaflota";
 	private String usuario = "root";
 	private String contrasenia = "root";
 	private String conexionString = "jdbc:mysql://localhost:3306/";
 	private Connection conexion;
-	
+
 	/**
 	 * Método que recibe un nombre y devuelve un usuario, principalmente usado para
 	 * crear partidas
@@ -85,8 +85,7 @@ public class ConexionABBDD {
 
 		return usuario;
 	}
-	
-	
+
 	/**
 	 * Método que busca la información sobre un tablero recibiendo por parámetros un
 	 * idTablero
@@ -167,8 +166,7 @@ public class ConexionABBDD {
 		}
 		return null;
 	}
-	
-	
+
 	/**
 	 * Método que busca por idUsuario y idTablero para recopilar los movimientos
 	 * 
@@ -223,8 +221,7 @@ public class ConexionABBDD {
 
 		return null;
 	}
-	
-	
+
 	/**
 	 * Método que busca la información sobre los barcos de un tablero de un jugador
 	 * 
@@ -292,14 +289,14 @@ public class ConexionABBDD {
 
 		return null;
 	}
-	
+
 	/**
 	 * Método que busca las partidas del usuario que están finalizadas
 	 * 
 	 * @param usuarioPropio
 	 * @return
 	 */
-	public ArrayList<Partida> buscarInformacionSobrePartidasTerminadas(Usuario usuarioPropio) {
+	public ArrayList<Partida> buscarInformacionSobrePartidasTerminadas() {
 		ArrayList<Partida> listaPartidas = new ArrayList<Partida>();
 		// Abrimos la conexión
 		try {
@@ -312,7 +309,7 @@ public class ConexionABBDD {
 		if (conexion != null) {
 			PreparedStatement query = null;
 			ResultSet resultado = null;
-			int idUsuario = usuarioPropio.getIdJugador();
+			int idUsuario = 0;
 			int idTablero = 0;
 			int idUsuarioEnemigo = 0;
 			int idPartida = 0;
@@ -321,16 +318,16 @@ public class ConexionABBDD {
 			boolean isTerminada = false;
 			int movimientosTotales = 0;
 			Usuario usuarioEnemigo;
-			Tablero nuevoTablero = null;
+			Usuario usuarioPropio;
+			Tablero tableroJugador1 = null;
+			Tablero tableroJugador2 = null;
 			Partida nuevaPartida = null;
-			String lugarJugador = "";
+			String lugarJugadorPropio = "";
+			String lugarJugadorEnemigo = "";
 			String jugadorGanador;
 
 			try {
-				query = conexion.prepareStatement(
-						"SELECT * FROM hundirlaflota.partida WHERE (idJugador1 = ? OR idJugador2 = ?) AND isTerminada = 1");
-				query.setInt(1, idUsuario);
-				query.setInt(2, idUsuario);
+				query = conexion.prepareStatement("SELECT * FROM hundirlaflota.partida WHERE isTerminada = 1");
 
 				resultado = query.executeQuery();
 
@@ -347,19 +344,26 @@ public class ConexionABBDD {
 
 					if (idUsuario == idJugadorPropio) {
 						usuarioEnemigo = buscarUsuarioBuscandoPorID(idJugadorEnemigo);
+						usuarioPropio = buscarUsuarioBuscandoPorID(idJugadorPropio);
 						idJugadorEnemigo = usuarioEnemigo.getIdJugador();
-						lugarJugador = "izq";
+						lugarJugadorPropio = "izq";
+						lugarJugadorEnemigo = "der";
 					} else {
 						usuarioEnemigo = buscarUsuarioBuscandoPorID(idJugadorPropio);
+						usuarioPropio = buscarUsuarioBuscandoPorID(idJugadorEnemigo);
 						idJugadorEnemigo = usuarioEnemigo.getIdJugador();
-						lugarJugador = "der";
+						lugarJugadorPropio = "der";
+						lugarJugadorEnemigo = "izq";
 					}
 					jugadorGanador = resultado.getString(7);
-					
-					nuevoTablero = buscarInformacionTablero(idTablero, idUsuario, idUsuarioEnemigo, lugarJugador);
 
-					nuevaPartida = new Partida(nuevoTablero, usuarioPropio, usuarioEnemigo, movimientosTotales,
-							isTerminada, jugadorGanador);
+					tableroJugador1 = buscarInformacionTablero(idTablero, idUsuario, idUsuarioEnemigo,
+							lugarJugadorPropio);
+					tableroJugador2 = buscarInformacionTablero(idTablero, idUsuarioEnemigo, idUsuario,
+							lugarJugadorPropio);
+
+					nuevaPartida = new Partida(idPartida, tableroJugador1, tableroJugador2, usuarioPropio, usuarioEnemigo,
+							movimientosTotales, isTerminada, jugadorGanador);
 					listaPartidas.add(nuevaPartida);
 				}
 
