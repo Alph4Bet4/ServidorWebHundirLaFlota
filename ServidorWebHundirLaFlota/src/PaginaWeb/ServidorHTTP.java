@@ -60,23 +60,23 @@ public class ServidorHTTP {
 	}
 
 	public static void comprobarPeticion(String peticion, PrintWriter escritor) {
-
+		String valorID = "0";
 		String errorPeticion = peticion.substring(3, peticion.lastIndexOf("HTTP"));
+		String separador = "\\?";
 
 		if (errorPeticion.equals("/?") == false) {
 			if (peticion.startsWith("GET")) {
 				//Cortamos para ver la peticion
 				peticion = peticion.substring(3, peticion.lastIndexOf("HTTP"));
-				System.out.println("\t\t\t\t\t" + peticion);
-				
-				//Cortamos para ver el valor de la ID
-				String valorID = peticion.substring(19);
+				System.out.println("\t\t\t\t\t" + peticion); // TODO borrar
 				
 				if (peticion.length() == 0 || peticion.equals("/") || peticion.equals("/index")) {
 					mostrarIndexGet(peticion, escritor);
 				} else if (peticion.equals("/formularioGet")) {
 					mostrarPartidasTerminadasGet(peticion, escritor);
-				} else if (peticion.equals("/Partida?idPartida=" + valorID)) {
+				} else if (peticion.split(separador)[0].equals("/Partida")) {
+					//Cortamos para ver el valor de la ID
+					valorID = peticion.substring(19);
 					verPartidaTerminada(peticion, escritor, Integer.parseInt(valorID));
 				}
 
@@ -219,10 +219,55 @@ public class ServidorHTTP {
 		BufferedReader lector = null;
 		String linea = "";
 		String html = "";
-		
+		String cadenaLetras = "ABCDE";
+		String aperturaDetd = "<td>#SUS&</td>";
 		Partida partidaActual = comprobarPartidaActual(idPartida);
 		
-		
+		try {
+			ficheroALeer = new FileReader("Partida.html");
+			lector = new BufferedReader(ficheroALeer);
+			
+			while ((linea = lector.readLine()) != null) {
+				if (linea != null) {
+					
+					if (linea.equals(aperturaDetd)) {
+						
+					}
+					html = html.concat(linea);
+					
+				}
+			}
+			
+			html = html.concat("<table>");
+			for (int i = 0; i < 5; i++) {
+				html = html.concat("<tr>");
+				for (int j = 0; j < 5; j++) {
+					String letraActual = cadenaLetras.substring(j, j + 1);
+					String posicionActual = letraActual+j;
+					
+					html = html.concat("<td>" + posicionActual + "</td>");
+					
+				}
+				html = html.concat("</tr>");
+			}
+			html = html.concat("</table>");
+			
+			enviarInformacionPantalla(html, escritor);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (ficheroALeer != null) {
+					ficheroALeer.close();
+				}
+				if (lector != null) {
+					lector.close();
+				}
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
 		
 	}
 	
