@@ -254,6 +254,7 @@ public class ServidorHTTP {
 			}
 			html = html.concat("</table>");
 
+			//TODO hacer la otra tabla y acabar esto
 			enviarInformacionPantalla(html, escritor);
 
 		} catch (Exception e) {
