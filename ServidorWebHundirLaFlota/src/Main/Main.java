@@ -62,7 +62,6 @@ public class Main {
 			}
 		}
 
-		// TODO preguntar si esto es lo que busca
 	}
 
 }

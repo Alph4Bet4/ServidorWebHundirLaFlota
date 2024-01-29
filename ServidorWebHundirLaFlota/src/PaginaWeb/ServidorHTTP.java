@@ -62,7 +62,6 @@ public class ServidorHTTP {
 	public static void comprobarPeticion(String peticion, PrintWriter escritor) {
 
 		String errorPeticion = peticion.substring(3, peticion.lastIndexOf("HTTP"));
-		
 
 		if (errorPeticion.equals("/?") == false) {
 			if (peticion.startsWith("GET")) {
@@ -70,10 +69,15 @@ public class ServidorHTTP {
 				peticion = peticion.substring(3, peticion.lastIndexOf("HTTP"));
 				System.out.println("\t\t\t\t\t" + peticion);
 				
+				//Cortamos para ver el valor de la ID
+				String valorID = peticion.substring(19);
+				
 				if (peticion.length() == 0 || peticion.equals("/") || peticion.equals("/index")) {
 					mostrarIndexGet(peticion, escritor);
 				} else if (peticion.equals("/formularioGet")) {
 					mostrarPartidasTerminadasGet(peticion, escritor);
+				} else if (peticion.equals("/Partida?idPartida=" + valorID)) {
+					verPartidaTerminada(peticion, escritor, Integer.parseInt(valorID));
 				}
 
 
@@ -209,6 +213,33 @@ public class ServidorHTTP {
 			}
 		}
 	}
+	
+	public static void verPartidaTerminada(String peticion, PrintWriter escritor, int idPartida) {
+		FileReader ficheroALeer = null;
+		BufferedReader lector = null;
+		String linea = "";
+		String html = "";
+		
+		Partida partidaActual = comprobarPartidaActual(idPartida);
+		
+		
+		
+	}
+	
+	/**
+	 * Método que busca en el array para encontrar la partida que quiere ver el usuario
+	 * @param idPartida
+	 * @return
+	 */
+	public static Partida comprobarPartidaActual(int idPartida) {
+		ArrayList<Partida> listaPartidas = contenedorDatos.getListaPartidasTerminadas();
+		for (Partida partida : listaPartidas) {
+			if (partida.getIdPartida() == idPartida) {
+				return partida;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Método que envía la información al cliente
@@ -228,7 +259,4 @@ public class ServidorHTTP {
 
 	}
 	
-	public static void verPartidaTerminada() {
-		//TODO
-	}
 }
