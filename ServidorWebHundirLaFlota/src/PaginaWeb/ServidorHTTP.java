@@ -50,7 +50,7 @@ public class ServidorHTTP {
 				}
 			}
 			System.out.println("");
-			
+
 			comprobarPeticion(peticion, escritor);
 
 		} catch (IOException e) {
@@ -66,23 +66,22 @@ public class ServidorHTTP {
 
 		if (errorPeticion.equals("/?") == false) {
 			if (peticion.startsWith("GET")) {
-				//Cortamos para ver la peticion
+				// Cortamos para ver la peticion
 				peticion = peticion.substring(3, peticion.lastIndexOf("HTTP"));
 				System.out.println("\t\t\t\t\t" + peticion); // TODO borrar
-				
+
 				if (peticion.length() == 0 || peticion.equals("/") || peticion.equals("/index")) {
 					mostrarIndexGet(peticion, escritor);
 				} else if (peticion.equals("/formularioGet")) {
 					mostrarPartidasTerminadasGet(peticion, escritor);
 				} else if (peticion.split(separador)[0].equals("/Partida")) {
-					//Cortamos para ver el valor de la ID
+					// Cortamos para ver el valor de la ID
 					valorID = peticion.substring(19);
 					verPartidaTerminada(peticion, escritor, Integer.parseInt(valorID));
 				}
 
-
 			} else if (peticion.startsWith("POST")) {
-				//Cortamos para ver la peticion
+				// Cortamos para ver la peticion
 				peticion = peticion.substring(4, peticion.lastIndexOf("HTTP"));
 				System.out.println("\t\t\t\t\t" + peticion);
 				System.out.println("Un usuario ha intentado hacer una peticion POST en el servidor de GET");
@@ -171,8 +170,8 @@ public class ServidorHTTP {
 				html = html.concat("</tr>");
 				html = html.concat("<tr>");
 				html = html.concat("<td>" + partida.getIdPartida() + "</td>");
-				html = html.concat("<td style=\"border: 1px solid black; padding: 5px;\">" + partida.getJugador1().getNombre()
-						+ " vs " + partida.getJugador2().getNombre() + "</td>");
+				html = html.concat("<td style=\"border: 1px solid black; padding: 5px;\">"
+						+ partida.getJugador1().getNombre() + " vs " + partida.getJugador2().getNombre() + "</td>");
 				html = html.concat("<td style=\"padding: 10px; border: 1px solid black;\">"
 						+ partida.getNombreJugadorGanador() + "</td>");
 				html = html.concat("</tr>");
@@ -213,47 +212,50 @@ public class ServidorHTTP {
 			}
 		}
 	}
-	
+
 	public static void verPartidaTerminada(String peticion, PrintWriter escritor, int idPartida) {
 		FileReader ficheroALeer = null;
 		BufferedReader lector = null;
 		String linea = "";
 		String html = "";
 		String cadenaLetras = "ABCDE";
+		String cadenaNumeros = "12345";
 		String aperturaDetd = "<td>#SUS&</td>";
 		Partida partidaActual = comprobarPartidaActual(idPartida);
-		
+
 		try {
 			ficheroALeer = new FileReader("Partida.html");
 			lector = new BufferedReader(ficheroALeer);
-			
+
 			while ((linea = lector.readLine()) != null) {
 				if (linea != null) {
-					
+
 					if (linea.equals(aperturaDetd)) {
-						
+
 					}
 					html = html.concat(linea);
-					
+
 				}
 			}
-			
+
 			html = html.concat("<table>");
 			for (int i = 0; i < 5; i++) {
 				html = html.concat("<tr>");
+				String letraActual = String.valueOf(cadenaLetras.charAt(i));
 				for (int j = 0; j < 5; j++) {
-					String letraActual = cadenaLetras.substring(j, j + 1);
-					String posicionActual = letraActual+j;
-					
+					String numeroActual = String.valueOf(cadenaNumeros.charAt(j));
+
+					String posicionActual = letraActual + numeroActual;
+
 					html = html.concat("<td>" + posicionActual + "</td>");
-					
+
 				}
 				html = html.concat("</tr>");
 			}
 			html = html.concat("</table>");
-			
+
 			enviarInformacionPantalla(html, escritor);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -268,11 +270,13 @@ public class ServidorHTTP {
 				e2.printStackTrace();
 			}
 		}
-		
+
 	}
-	
+
 	/**
-	 * Método que busca en el array para encontrar la partida que quiere ver el usuario
+	 * Método que busca en el array para encontrar la partida que quiere ver el
+	 * usuario
+	 * 
 	 * @param idPartida
 	 * @return
 	 */
@@ -303,5 +307,5 @@ public class ServidorHTTP {
 		}
 
 	}
-	
+
 }
