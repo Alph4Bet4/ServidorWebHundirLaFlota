@@ -13,7 +13,9 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import Clases.Barco;
 import Clases.Partida;
+import Clases.Tablero;
 import Contenedor.ContenedorDatos;
 import PaginaWeb.Mensajes;
 
@@ -220,39 +222,110 @@ public class ServidorHTTP {
 		String html = "";
 		String cadenaLetras = "ABCDE";
 		String cadenaNumeros = "12345";
-		String aperturaDetd = "<td>#SUS&</td>";
 		Partida partidaActual = comprobarPartidaActual(idPartida);
-
+		
+		//TODO arreglar que no recibo la lista de disparos y los barcos
+		System.out.println("\t\t\t\t\t\t\t-Tamaño lista disparos jugador1: " + partidaActual.getTableroJugador1().getPosicionesDisparoJugador2().size());
+		System.out.println("\t\t\t\t\t\t\t-Tamaño lista barcos: " + partidaActual.getTableroJugador1().getListaPosicionesBarco().size());
+		
 		try {
 			ficheroALeer = new FileReader("Partida.html");
 			lector = new BufferedReader(ficheroALeer);
 
 			while ((linea = lector.readLine()) != null) {
 				if (linea != null) {
-
-					if (linea.equals(aperturaDetd)) {
-
-					}
 					html = html.concat(linea);
 
 				}
 			}
 
+			//Tabla jugador 1
 			html = html.concat("<table>");
 			for (int i = 0; i < 5; i++) {
 				html = html.concat("<tr>");
 				String letraActual = String.valueOf(cadenaLetras.charAt(i));
 				for (int j = 0; j < 5; j++) {
+					boolean isBarcoEnEsaPosicion = false;
+					boolean isCasillaDisparada = false;
 					String numeroActual = String.valueOf(cadenaNumeros.charAt(j));
 
 					String posicionActual = letraActual + numeroActual;
-
-					html = html.concat("<td>" + posicionActual + "</td>");
+					
+					//Comprueba la posición con los barcos que el usuario había colocado
+					for (Barco barco : partidaActual.getTableroJugador1().getListaPosicionesBarco()) {
+						if (posicionActual.equals(barco.getPosicion())) {
+							isBarcoEnEsaPosicion = true;
+							break;
+						}
+					}
+					//El jugador 2 hace disparos en el tablero 1
+					for (String disparos : partidaActual.getTableroJugador1().getPosicionesDisparoJugador2()) {
+						if (posicionActual.equals(disparos)) {
+							isCasillaDisparada = true;
+							break;
+						}
+					}
+					
+					//Si hay un barco y no está disparado lo coloca
+					if (isBarcoEnEsaPosicion == true && isCasillaDisparada == false) {
+						html = html.concat("<td>" + "Barco" + "</td>");
+					} else if (isCasillaDisparada == true) {
+						//Si hay un disparo lo coloca
+						html = html.concat("<td style=\"font-color: red;\">" + "X" + "</td>");
+					} else if (isCasillaDisparada == false && isBarcoEnEsaPosicion == false) {
+						//Si no hay disparo ni barco simplemente marca el nombre de la casilla
+						html = html.concat("<td>" + posicionActual + "</td>");
+					}
+					
 
 				}
 				html = html.concat("</tr>");
 			}
 			html = html.concat("</table>");
+			
+			//Tabla jugador 2
+			html = html.concat("<table>");
+			for (int i = 0; i < 5; i++) {
+				html = html.concat("<tr>");
+				String letraActual = String.valueOf(cadenaLetras.charAt(i));
+				for (int j = 0; j < 5; j++) {
+					boolean isBarcoEnEsaPosicion = false;
+					boolean isCasillaDisparada = false;
+					String numeroActual = String.valueOf(cadenaNumeros.charAt(j));
+
+					String posicionActual = letraActual + numeroActual;
+					//Comprueba la posición con los barcos que el usuario había colocado
+					for (Barco barco : partidaActual.getTableroJugador2().getListaPosicionesBarco()) {
+						if (posicionActual.equals(barco.getPosicion())) {
+							isBarcoEnEsaPosicion = true;
+							break;
+						}
+					}
+					//El jugador 1 hace disparos en el tablero 2
+					for (String disparos : partidaActual.getTableroJugador2().getPosicionesDisparoJugador1()) {
+						if (posicionActual.equals(disparos)) {
+							isCasillaDisparada = true;
+							break;
+						}
+					}
+					
+					//Si hay un barco y no está disparado lo coloca
+					if (isBarcoEnEsaPosicion == true && isCasillaDisparada == false) {
+						html = html.concat("<td>" + "Barco" + "</td>");
+					} else if (isCasillaDisparada == true) {
+						//Si hay un disparo lo coloca
+						html = html.concat("<td style=\"font-color: red;\">" + "X" + "</td>");
+					} else if (isCasillaDisparada == false && isBarcoEnEsaPosicion == false) {
+						//Si no hay disparo ni barco simplemente marca el nombre de la casilla
+						html = html.concat("<td>" + posicionActual + "</td>");
+					}
+					
+
+				}
+				html = html.concat("</tr>");
+			}
+			html = html.concat("</table>");
+			html = html.concat("<p>Ganador: " + partidaActual.getNombreJugadorGanador() + " </p>");
 
 			//TODO hacer la otra tabla y acabar esto
 			enviarInformacionPantalla(html, escritor);
