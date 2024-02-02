@@ -32,6 +32,14 @@ public class Main {
 		listaPartidas = conexionBBDD.buscarInformacionSobrePartidasTerminadas();
 		contenedorDatos.setListaPartidasTerminadas(listaPartidas);
 
+		//TODO borrar luego		
+		for (Partida partida : listaPartidas) {
+			System.out.println(partida.getIdPartida());
+			System.out.println("Winner " + partida.getNombreJugadorGanador());
+			System.out.println("Jugador1 " + partida.getTableroJugador1().getPosicionesDisparoJugador2() + " id " + partida.getJugador1().getNombre());
+			System.out.println("Jugador2 " + partida.getTableroJugador2().getPosicionesDisparoJugador2()+ " id " + partida.getJugador2().getNombre());
+		}
+		
 		abrirServidor(contenedorDatos);
 	}
 

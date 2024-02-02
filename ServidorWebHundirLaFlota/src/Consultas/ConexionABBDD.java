@@ -59,7 +59,7 @@ public class ConexionABBDD {
 				contrasenia = "vacio"; // Por tema de seguridad no lo añadimos
 				partidasJugadas = resultado.getInt(4);
 				puntuacion = resultado.getInt(5);
-
+				
 				usuario = new Usuario(idUsuario, nombreUsuario, contrasenia, partidasJugadas, puntuacion);
 
 			} catch (Exception e) {
@@ -130,20 +130,17 @@ public class ConexionABBDD {
 					numBarcosRestantesJugadorPropio = resultado.getInt(4);
 					numBarcosRestantesJugadorEnemigo = resultado.getInt(5);
 
+					System.out.println("IDUSUARIO ENEMIGO " + idUsuarioEnemigo); //TODO
+					System.out.println("IDUSUARIO PROPIO " + idUsuarioPropio);
+					
 					listaDisparosUsuarioPropio = buscarInformacionDisparos(idUsuarioPropio, idTablero);
+					
 					listaDisparosUsuarioEnemigo = buscarInformacionDisparos(idUsuarioEnemigo, idTablero);
 
 					listaBarcos = buscarInformacionBarco(idTablero, idUsuarioPropio);
-					if (posicion.equals("izq")) {
-						nuevoTablero = new Tablero(idTablero, listaBarcos, listaDisparosUsuarioPropio,
-								listaDisparosUsuarioEnemigo, isTurnoJugadorPropio, numBarcosRestantesJugadorPropio);
-					}
 
-					if (posicion.equals("der")) {
-						nuevoTablero = new Tablero(idTablero, listaBarcos, listaDisparosUsuarioPropio,
-								listaDisparosUsuarioEnemigo, isTurnoJugadorEnemigo, numBarcosRestantesJugadorPropio);
-					}
-
+					nuevoTablero = new Tablero(idTablero, listaBarcos, listaDisparosUsuarioPropio,
+							listaDisparosUsuarioEnemigo, isTurnoJugadorEnemigo, numBarcosRestantesJugadorPropio);
 				}
 
 				return nuevoTablero;
@@ -190,16 +187,18 @@ public class ConexionABBDD {
 			String posicionDisparo;
 			try {
 				query = conexion.prepareStatement(
-						"SELECT * FROM hundirlaflota.movimientos WHERE IdTablero = ? AND IdJugador = ?");
+						"SELECT * FROM hundirlaflota.movimientos WHERE IdTablero = ? AND IdJugador = ?;");
 				query.setInt(1, idTablero);
 				query.setInt(2, idUsuario);
 
 				resultado = query.executeQuery();
-
+				
 				while (resultado.next()) {
 					posicionDisparo = resultado.getString(4);
+					System.out.println(idUsuario + " ----Disparo:" + posicionDisparo); //TODO
 					listaDisparos.add(posicionDisparo);
 				}
+				System.out.println();
 				return listaDisparos;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -214,6 +213,7 @@ public class ConexionABBDD {
 				} catch (Exception e2) {
 					e2.printStackTrace();
 				}
+
 			}
 		} else {
 			System.out.println("- Ha ocurrido un error buscando información sobre disparos");
@@ -251,6 +251,7 @@ public class ConexionABBDD {
 						String posicionBarco;
 						try {
 							posicionBarco = resultado.getString(i);
+							System.out.println("ID: " + idJugador + "+++++++++++++++posicion barco " + posicionBarco);
 						} catch (Exception e) {
 							posicionBarco = "vacio";
 							e.printStackTrace();
@@ -342,28 +343,26 @@ public class ConexionABBDD {
 						;
 					movimientosTotales = resultado.getInt(6);
 
-					if (idUsuario == idJugadorPropio) {
-						usuarioEnemigo = buscarUsuarioBuscandoPorID(idJugadorEnemigo);
-						usuarioPropio = buscarUsuarioBuscandoPorID(idJugadorPropio);
-						idJugadorEnemigo = usuarioEnemigo.getIdJugador();
-						lugarJugadorPropio = "izq";
-						lugarJugadorEnemigo = "der";
-					} else {
-						usuarioEnemigo = buscarUsuarioBuscandoPorID(idJugadorPropio);
-						usuarioPropio = buscarUsuarioBuscandoPorID(idJugadorEnemigo);
-						idJugadorEnemigo = usuarioEnemigo.getIdJugador();
-						lugarJugadorPropio = "der";
-						lugarJugadorEnemigo = "izq";
-					}
+					lugarJugadorPropio = "izq";
+					lugarJugadorEnemigo = "der";
+					
+					
+					usuarioPropio = buscarUsuarioBuscandoPorID(idJugadorPropio);
+
+					usuarioEnemigo = buscarUsuarioBuscandoPorID(idJugadorEnemigo);
+					
+					//TODO arreglado, borrar cosas
 					jugadorGanador = resultado.getString(7);
 
-					tableroJugador1 = buscarInformacionTablero(idTablero, idUsuario, idUsuarioEnemigo,
+					tableroJugador1 = buscarInformacionTablero(idTablero, idJugadorEnemigo, idJugadorPropio,
 							lugarJugadorPropio);
-					tableroJugador2 = buscarInformacionTablero(idTablero, idUsuarioEnemigo, idUsuario,
+					
+					tableroJugador2 = buscarInformacionTablero(idTablero, idJugadorPropio, idJugadorEnemigo,
 							lugarJugadorPropio);
 
 					nuevaPartida = new Partida(idPartida, tableroJugador1, tableroJugador2, usuarioPropio, usuarioEnemigo,
 							movimientosTotales, isTerminada, jugadorGanador);
+					
 					listaPartidas.add(nuevaPartida);
 				}
 
