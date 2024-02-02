@@ -259,7 +259,7 @@ public class ServidorHTTP {
 						}
 					}
 					//El jugador 2 hace disparos en el tablero 1
-					for (String disparos : partidaActual.getTableroJugador1().getPosicionesDisparoJugador2()) {
+					for (String disparos : partidaActual.getTableroJugador1().getPosicionesDisparoJugador1()) {
 						if (posicionActual.equals(disparos)) {
 							isCasillaDisparada = true;
 							break;
@@ -271,7 +271,7 @@ public class ServidorHTTP {
 						html = html.concat("<td>" + "Barco" + "</td>");
 					} else if (isCasillaDisparada == true) {
 						//Si hay un disparo lo coloca
-						html = html.concat("<td style=\"font-color: red;\">" + "X" + "</td>");
+						html = html.concat("<td style=\"background-color: red;\">" + "X" + "</td>");
 					} else if (isCasillaDisparada == false && isBarcoEnEsaPosicion == false) {
 						//Si no hay disparo ni barco simplemente marca el nombre de la casilla
 						html = html.concat("<td>" + posicionActual + "</td>");
@@ -282,8 +282,10 @@ public class ServidorHTTP {
 				html = html.concat("</tr>");
 			}
 			html = html.concat("</table>");
-			
+			//TODO especificar tableros y añadir decoracion
 			//Tabla jugador 2
+
+			
 			html = html.concat("<table>");
 			for (int i = 0; i < 5; i++) {
 				html = html.concat("<tr>");
@@ -314,7 +316,7 @@ public class ServidorHTTP {
 						html = html.concat("<td>" + "Barco" + "</td>");
 					} else if (isCasillaDisparada == true) {
 						//Si hay un disparo lo coloca
-						html = html.concat("<td style=\"font-color: red;\">" + "X" + "</td>");
+						html = html.concat("<td style=\"background-color: red;\">" + "X" + "</td>");
 					} else if (isCasillaDisparada == false && isBarcoEnEsaPosicion == false) {
 						//Si no hay disparo ni barco simplemente marca el nombre de la casilla
 						html = html.concat("<td>" + posicionActual + "</td>");
