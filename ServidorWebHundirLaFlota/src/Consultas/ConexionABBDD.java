@@ -129,9 +129,6 @@ public class ConexionABBDD {
 
 					numBarcosRestantesJugadorPropio = resultado.getInt(4);
 					numBarcosRestantesJugadorEnemigo = resultado.getInt(5);
-
-					System.out.println("IDUSUARIO ENEMIGO " + idUsuarioEnemigo); //TODO
-					System.out.println("IDUSUARIO PROPIO " + idUsuarioPropio);
 					
 					listaDisparosUsuarioPropio = buscarInformacionDisparos(idUsuarioPropio, idTablero);
 					
@@ -195,10 +192,8 @@ public class ConexionABBDD {
 				
 				while (resultado.next()) {
 					posicionDisparo = resultado.getString(4);
-					System.out.println(idUsuario + " ----Disparo:" + posicionDisparo); //TODO
 					listaDisparos.add(posicionDisparo);
 				}
-				System.out.println();
 				return listaDisparos;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -251,7 +246,6 @@ public class ConexionABBDD {
 						String posicionBarco;
 						try {
 							posicionBarco = resultado.getString(i);
-							System.out.println("ID: " + idJugador + "+++++++++++++++posicion barco " + posicionBarco);
 						} catch (Exception e) {
 							posicionBarco = "vacio";
 							e.printStackTrace();
