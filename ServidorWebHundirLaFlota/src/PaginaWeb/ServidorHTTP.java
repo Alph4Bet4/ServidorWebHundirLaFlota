@@ -372,10 +372,12 @@ public class ServidorHTTP {
 					
 					//Si hay un barco y no está disparado lo coloca
 					if (isBarcoEnEsaPosicion == true && isCasillaDisparada == false) {
-						html = html.concat("<td>" + "Barco" + "</td>");
+						html = html.concat("<td style=\"background-color: brown;\">" + "Barco" + "</td>");
+					} else if (isBarcoEnEsaPosicion == false && isCasillaDisparada == true) {
+						html = html.concat("<td style=\"background-color: red;\">" + "X" + "</td>");
 					} else if (isCasillaDisparada == true) {
 						//Si hay un disparo lo coloca
-						html = html.concat("<td style=\"background-color: red;\">" + "X" + "</td>");
+						html = html.concat("<td style=\"background-color: lime;\">" + "X" + "</td>");
 					} else if (isCasillaDisparada == false && isBarcoEnEsaPosicion == false) {
 						//Si no hay disparo ni barco simplemente marca el nombre de la casilla
 						html = html.concat("<td>" + posicionActual + "</td>");
@@ -386,10 +388,9 @@ public class ServidorHTTP {
 				html = html.concat("</tr>");
 			}
 			html = html.concat("</table>");
-			//TODO especificar tableros y añadir decoracion
-			//Tabla jugador 2
 
-			
+			//Tabla jugador 2
+	
 			html = html.concat("<table>");
 			for (int i = 0; i < 5; i++) {
 				html = html.concat("<tr>");
@@ -417,10 +418,10 @@ public class ServidorHTTP {
 					
 					//Si hay un barco y no está disparado lo coloca
 					if (isBarcoEnEsaPosicion == true && isCasillaDisparada == false) {
-						html = html.concat("<td>" + "Barco" + "</td>");
+						html = html.concat("<td style=\"background-color: brown;\">" + "Barco" + "</td>");
 					} else if (isCasillaDisparada == true) {
 						//Si hay un disparo lo coloca
-						html = html.concat("<td style=\"background-color: red;\">" + "X" + "</td>");
+						html = html.concat("<td style=\"background-color: lime;\">" + "X" + "</td>");
 					} else if (isCasillaDisparada == false && isBarcoEnEsaPosicion == false) {
 						//Si no hay disparo ni barco simplemente marca el nombre de la casilla
 						html = html.concat("<td>" + posicionActual + "</td>");
@@ -433,7 +434,6 @@ public class ServidorHTTP {
 			html = html.concat("</table>");
 			html = html.concat("<p>Ganador: " + partidaActual.getNombreJugadorGanador() + " </p>");
 
-			//TODO hacer la otra tabla y acabar esto
 			enviarInformacionPantalla(html, escritor);
 
 		} catch (Exception e) {
