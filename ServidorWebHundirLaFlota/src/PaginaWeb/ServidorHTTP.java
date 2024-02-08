@@ -432,8 +432,12 @@ public class ServidorHTTP {
 				html = html.concat("</tr>");
 			}
 			html = html.concat("</table>");
-			html = html.concat("<p>Ganador: " + partidaActual.getNombreJugadorGanador() + " </p>");
-
+			html = html.concat("<p>Ganador: " + partidaActual.getNombreJugadorGanador() + "</p>");
+			html = html.concat("<p><a href=\"/ListaPartidas\"></a></p>");
+			
+			html = html.concat("</body>");
+			html = html.concat("</html>");
+			
 			enviarInformacionPantalla(html, escritor);
 
 		} catch (Exception e) {
