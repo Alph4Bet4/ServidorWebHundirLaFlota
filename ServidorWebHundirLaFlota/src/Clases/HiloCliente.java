@@ -6,7 +6,7 @@ package Clases;
 import java.io.IOException;
 import java.net.Socket;
 
-import Contenedor.ContenedorDatos;
+import ContenedorGet_Post.ContenedorDatos;
 import PaginaWeb.ServidorHTTP;
 
 /**

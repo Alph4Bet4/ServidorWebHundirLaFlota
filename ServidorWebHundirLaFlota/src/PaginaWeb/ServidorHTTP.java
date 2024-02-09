@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import Clases.Barco;
 import Clases.Partida;
 import Clases.Tablero;
-import Contenedor.ContenedorDatos;
+import ContenedorGet_Post.ContenedorDatos;
 import PaginaWeb.Mensajes;
 
 /**
@@ -143,6 +143,7 @@ public class ServidorHTTP {
 			}
 
 			System.out.println(html); // TODO hay un error en el html, me muestra "</"
+
 			enviarInformacionPantalla(html, escritor);
 
 		} catch (FileNotFoundException e) {
@@ -433,7 +434,7 @@ public class ServidorHTTP {
 			}
 			html = html.concat("</table>");
 			html = html.concat("<p>Ganador: " + partidaActual.getNombreJugadorGanador() + "</p>");
-			html = html.concat("<p><a href=\"/ListaPartidas\"></a></p>");
+			html = html.concat("<p><a href=\"/index\">Indice</a></p>");
 			
 			html = html.concat("</body>");
 			html = html.concat("</html>");

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package Main;
+package MainGet_Post;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -16,7 +16,7 @@ import Clases.HiloCliente;
 import Clases.Partida;
 import Clases.Usuario;
 import Consultas.ConexionABBDD;
-import Contenedor.ContenedorDatos;
+import ContenedorGet_Post.ContenedorDatos;
 import PaginaWeb.ServidorHTTP;
 
 /**
