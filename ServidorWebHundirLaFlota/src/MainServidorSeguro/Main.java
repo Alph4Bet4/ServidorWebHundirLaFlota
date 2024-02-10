@@ -1,23 +1,21 @@
 /**
  * 
  */
-package MainGet_Post;
+package MainServidorSeguro;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import javax.net.ssl.SSLServerSocket;
+
 import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.*;
 
 import Clases.HiloCliente;
 import Clases.Partida;
-import Clases.Usuario;
 import Consultas.ConexionABBDD;
 import ContenedorGet_Post.ContenedorDatos;
-import PaginaWeb.ServidorHTTP;
 
 /**
  * 
@@ -28,6 +26,8 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+
+		
 		ContenedorDatos contenedorDatos = new ContenedorDatos();
 		ArrayList<Partida> listaPartidas = new ArrayList<>();
 		System.out.println(mostrarInformacionPantalla());
@@ -44,11 +44,21 @@ public class Main {
 	}
 
 	public static void abrirServidor(ContenedorDatos contenedor) {
+		SSLServerSocketFactory servidorSeguroFactory = null;
 		ServerSocket servidor = null;
-		
 		try {
-			// Abrimos el servidor - No seguro
-			servidor = new ServerSocket(5000);
+			System.setProperty("javax.net.ssl.keyStore", "certificados/servidor/serverKey.jks");
+			System.setProperty("javax.net.ssl.keyStorePassword","servpass");
+			System.setProperty("javax.net.ssl.trustStore", "certificados/servidor/serverTrustedCerts.jks");
+			System.setProperty("javax.net.ssl.trustStorePassword", "servpass");
+			
+		} catch (Exception e) {
+			System.out.println("Error leyendo los certificados");
+		}
+		try {
+			//Abrimos el servidor - Seguro
+			servidorSeguroFactory =  (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+			servidor = servidorSeguroFactory.createServerSocket(5000);
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -58,7 +68,7 @@ public class Main {
 			Socket conexion = null;
 			
 			try {
-				// Aceptamos las conexiones - No seguro
+				//Aceptamos las conexiones - Seguro // En "https://chuidiang.org/index.php?title=Socket_SSL_con_Java#C%C3%B3digo_de_ejemplo" se encuentra una buena guía de como usar
 				conexion = servidor.accept();
 				
 				HiloCliente hiloCliente = new HiloCliente(conexion, contenedor);				
