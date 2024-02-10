@@ -21,7 +21,14 @@ public class Lector {
 	 * @return
 	 */
 	public static Map<String, List<String>> leerHeader(HttpURLConnection conexionURL) {
-		Map<String, List<String>> cabeceraRespuesta = conexionURL.getHeaderFields();
+		Map<String, List<String>> cabeceraRespuesta = null;
+		try {
+			cabeceraRespuesta = conexionURL.getHeaderFields();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Error leyendo cabeceras");
+		}
+		
 		return cabeceraRespuesta;
 	}
 
@@ -42,6 +49,7 @@ public class Lector {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.out.println("Error en leer el body");
 		}
 		return cadenaString;
 	}

@@ -46,32 +46,42 @@ public class ServidorHTTP {
 			peticion = lector.readLine();
 			peticion = peticion.replaceAll(" ", "");
 
-			if (peticion.contains("/favicon.ico") == false || !peticion.contains("/main.css") == false) {
-				System.out.println(peticion);
-				peticionAMostrar = peticion;
-				while ((peticionAMostrar = lector.readLine()).equals("") == false) {
-					System.out.println(peticionAMostrar);
-					if (peticionAMostrar.startsWith("Content-Length")) {
-						longitudContenido = peticionAMostrar.substring(16); 
+			try {
+				if (peticion.substring(3, 15).equals("/favicon.ico") == false
+						|| peticion.substring(3, 12).equals("/main.css") == false) {
+					System.out.println(peticion);
+					peticionAMostrar = peticion;
+
+					while ((peticionAMostrar = lector.readLine()).equals("") == false) {
+						System.out.println(peticionAMostrar);
+
+						if (peticionAMostrar.startsWith("Content-Length")) {
+							longitudContenido = peticionAMostrar.substring(16);
+
+						}
 					}
 				}
-				
+			} catch (Exception e) {
+				//Nada
 			}
+			
 			System.out.println("");
-			
+
 			if (longitudContenido != null) {
-				int cp;
+				int caracter;
 				int cantidadLeido = Integer.parseInt(longitudContenido);
-				while ((cp = lector.read()) != -1 && cantidadLeido > 1) {
-					sb.append((char) cp); //TODO arreglar este bucle infinito
+
+				while ((caracter = lector.read()) != -1 && cantidadLeido > 1) {
+					sb.append((char) caracter);
 					cantidadLeido--;
-					System.out.println("Char: " + cp);
+					System.out.println("Char: " + caracter);
 					System.out.println("Cantidad " + cantidadLeido);
+
 				}
-				sb.append((char) cp);
-				System.out.println(sb);
+				sb.append((char) caracter);
+				System.out.println(sb); // TODO borrar
 			}
-			
+
 			comprobarPeticion(peticion, escritor, sb.toString());
 
 		} catch (IOException e) {
@@ -89,30 +99,36 @@ public class ServidorHTTP {
 			if (peticion.startsWith("GET")) {
 				// Cortamos para ver la peticion
 				peticion = peticion.substring(3, peticion.lastIndexOf("HTTP"));
-				System.out.println("\t\t\t\t\t" + peticion); // TODO borrar
+				System.out.println("\t\t\t\t\tPeticion: " + peticion); // TODO borrar
 
 				if (peticion.length() == 0 || peticion.equals("/") || peticion.equals("/index")) {
-					mostrarIndexGet(peticion, escritor);
-				} else if (peticion.equals("/formularioGet")) {
+					mostrarIndex(peticion, escritor);
+
+				} else if (peticion.equals("/ListaPartidasGet")) {
 					mostrarPartidasTerminadasGet(peticion, escritor);
+
 				} else if (peticion.split(separador)[0].equals("/Partida")) {
 					// Cortamos para ver el valor de la ID
 					valorID = peticion.substring(19);
 					verPartidaTerminada(peticion, escritor, Integer.parseInt(valorID));
-				} else if (peticion.equals("/formularioPost")) {
-					mostrarPartidasTerminadasPost(lineaPost, escritor);	
+
+				} else if (peticion.equals("/ListaPartidasPost")) {
+					mostrarPartidasTerminadasPost(lineaPost, escritor);
+
 				}
 
 			} else if (peticion.startsWith("POST")) {
 				// Cortamos para ver la peticion
 				peticion = peticion.substring(4, peticion.lastIndexOf("HTTP"));
-				System.out.println("\t\t\t\t\t" + peticion); //TODO limpiar cosas
+				System.out.println("\t\t\t\t\tPeticion: " + peticion); // TODO limpiar cosas
+
 				if (peticion.equals("/Partida")) {
 					valorID = lineaPost.substring(10);
 					System.out.println(valorID);
 					verPartidaTerminada(peticion, escritor, Integer.parseInt(valorID));
+
 				}
-				
+
 			}
 
 		} else {
@@ -126,7 +142,7 @@ public class ServidorHTTP {
 	 * @param peticion
 	 * @param escritor
 	 */
-	public static void mostrarIndexGet(String peticion, PrintWriter escritor) {
+	public static void mostrarIndex(String peticion, PrintWriter escritor) {
 		FileReader ficheroALeer = null;
 		BufferedReader lector = null;
 		String linea = "";
@@ -241,7 +257,7 @@ public class ServidorHTTP {
 			}
 		}
 	}
-	
+
 	/**
 	 * Método que muestra las partidas terminadas de post
 	 * 
@@ -328,11 +344,7 @@ public class ServidorHTTP {
 		String cadenaLetras = "ABCDE";
 		String cadenaNumeros = "12345";
 		Partida partidaActual = comprobarPartidaActual(idPartida);
-		
-		//TODO arreglar que no recibo la lista de disparos y los barcos
-		System.out.println("\t\t\t\t\t\t\t-Tamaño lista disparos jugador1: " + partidaActual.getTableroJugador1().getPosicionesDisparoJugador2().size());
-		System.out.println("\t\t\t\t\t\t\t-Tamaño lista barcos: " + partidaActual.getTableroJugador1().getListaPosicionesBarco().size());
-		
+
 		try {
 			ficheroALeer = new FileReader("Partida.html");
 			lector = new BufferedReader(ficheroALeer);
@@ -344,7 +356,9 @@ public class ServidorHTTP {
 				}
 			}
 
-			//Tabla jugador 1
+			// Tabla jugador 1
+			html = html.concat("<p style=\"text-align: left; font-size: 20px;\">Jugador 1: "
+					+ partidaActual.getJugador1().getNombre() + "</p>");
 			html = html.concat("<table>");
 			for (int i = 0; i < 5; i++) {
 				html = html.concat("<tr>");
@@ -355,43 +369,43 @@ public class ServidorHTTP {
 					String numeroActual = String.valueOf(cadenaNumeros.charAt(j));
 
 					String posicionActual = letraActual + numeroActual;
-					
-					//Comprueba la posición con los barcos que el usuario había colocado
+
+					// Comprueba la posición con los barcos que el usuario había colocado
 					for (Barco barco : partidaActual.getTableroJugador1().getListaPosicionesBarco()) {
 						if (posicionActual.equals(barco.getPosicion())) {
 							isBarcoEnEsaPosicion = true;
 							break;
 						}
 					}
-					//El jugador 2 hace disparos en el tablero 1
+					// El jugador 2 hace disparos en el tablero 1
 					for (String disparos : partidaActual.getTableroJugador1().getPosicionesDisparoJugador1()) {
 						if (posicionActual.equals(disparos)) {
 							isCasillaDisparada = true;
 							break;
 						}
 					}
-					
-					//Si hay un barco y no está disparado lo coloca
+
+					// Si hay un barco y no está disparado lo coloca
 					if (isBarcoEnEsaPosicion == true && isCasillaDisparada == false) {
 						html = html.concat("<td style=\"background-color: brown;\">" + "Barco" + "</td>");
 					} else if (isBarcoEnEsaPosicion == false && isCasillaDisparada == true) {
 						html = html.concat("<td style=\"background-color: red;\">" + "X" + "</td>");
 					} else if (isCasillaDisparada == true) {
-						//Si hay un disparo lo coloca
+						// Si hay un disparo lo coloca
 						html = html.concat("<td style=\"background-color: lime;\">" + "X" + "</td>");
 					} else if (isCasillaDisparada == false && isBarcoEnEsaPosicion == false) {
-						//Si no hay disparo ni barco simplemente marca el nombre de la casilla
+						// Si no hay disparo ni barco simplemente marca el nombre de la casilla
 						html = html.concat("<td>" + posicionActual + "</td>");
 					}
-					
 
 				}
 				html = html.concat("</tr>");
 			}
 			html = html.concat("</table>");
 
-			//Tabla jugador 2
-	
+			// Tabla jugador 2
+			html = html.concat("<p style=\"text-align: left; font-size: 20px;\">Jugador 2: "
+					+ partidaActual.getJugador2().getNombre() + "</p>");
 			html = html.concat("<table>");
 			for (int i = 0; i < 5; i++) {
 				html = html.concat("<tr>");
@@ -402,32 +416,31 @@ public class ServidorHTTP {
 					String numeroActual = String.valueOf(cadenaNumeros.charAt(j));
 
 					String posicionActual = letraActual + numeroActual;
-					//Comprueba la posición con los barcos que el usuario había colocado
+					// Comprueba la posición con los barcos que el usuario había colocado
 					for (Barco barco : partidaActual.getTableroJugador2().getListaPosicionesBarco()) {
 						if (posicionActual.equals(barco.getPosicion())) {
 							isBarcoEnEsaPosicion = true;
 							break;
 						}
 					}
-					//El jugador 1 hace disparos en el tablero 2
+					// El jugador 1 hace disparos en el tablero 2
 					for (String disparos : partidaActual.getTableroJugador2().getPosicionesDisparoJugador1()) {
 						if (posicionActual.equals(disparos)) {
 							isCasillaDisparada = true;
 							break;
 						}
 					}
-					
-					//Si hay un barco y no está disparado lo coloca
+
+					// Si hay un barco y no está disparado lo coloca
 					if (isBarcoEnEsaPosicion == true && isCasillaDisparada == false) {
 						html = html.concat("<td style=\"background-color: brown;\">" + "Barco" + "</td>");
 					} else if (isCasillaDisparada == true) {
-						//Si hay un disparo lo coloca
+						// Si hay un disparo lo coloca
 						html = html.concat("<td style=\"background-color: lime;\">" + "X" + "</td>");
 					} else if (isCasillaDisparada == false && isBarcoEnEsaPosicion == false) {
-						//Si no hay disparo ni barco simplemente marca el nombre de la casilla
+						// Si no hay disparo ni barco simplemente marca el nombre de la casilla
 						html = html.concat("<td>" + posicionActual + "</td>");
 					}
-					
 
 				}
 				html = html.concat("</tr>");
@@ -435,10 +448,10 @@ public class ServidorHTTP {
 			html = html.concat("</table>");
 			html = html.concat("<p>Ganador: " + partidaActual.getNombreJugadorGanador() + "</p>");
 			html = html.concat("<p><a href=\"/index\">Indice</a></p>");
-			
+
 			html = html.concat("</body>");
 			html = html.concat("</html>");
-			
+
 			enviarInformacionPantalla(html, escritor);
 
 		} catch (Exception e) {

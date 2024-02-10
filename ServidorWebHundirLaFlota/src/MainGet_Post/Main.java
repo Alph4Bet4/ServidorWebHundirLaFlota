@@ -46,12 +46,14 @@ public class Main {
 	public static void abrirServidor(ContenedorDatos contenedor) {
 		SSLServerSocketFactory servidorSeguroFactory = null;
 		ServerSocket servidor = null;
+		
 		try {
 			// Abrimos el servidor - No seguro
 			servidor = new ServerSocket(5000);
 			//Abrimos el servidor - Seguro
 //			servidorSeguroFactory =  (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
 //			servidor = servidorSeguroFactory.createServerSocket(5000);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

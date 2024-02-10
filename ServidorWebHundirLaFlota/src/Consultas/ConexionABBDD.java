@@ -344,8 +344,7 @@ public class ConexionABBDD {
 					usuarioPropio = buscarUsuarioBuscandoPorID(idJugadorPropio);
 
 					usuarioEnemigo = buscarUsuarioBuscandoPorID(idJugadorEnemigo);
-					
-					//TODO arreglado, borrar cosas
+
 					jugadorGanador = resultado.getString(7);
 
 					tableroJugador1 = buscarInformacionTablero(idTablero, idJugadorEnemigo, idJugadorPropio,
