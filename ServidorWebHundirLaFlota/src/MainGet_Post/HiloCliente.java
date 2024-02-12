@@ -1,7 +1,7 @@
 /**
  * 
  */
-package Clases;
+package MainGet_Post;
 
 import java.io.IOException;
 import java.net.Socket;

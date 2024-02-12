@@ -8,16 +8,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocketFactory;
 
-import Clases.HiloCliente;
 import Clases.Partida;
-import Clases.Usuario;
 import Consultas.ConexionABBDD;
 import ContenedorGet_Post.ContenedorDatos;
-import PaginaWeb.ServidorHTTP;
 
 /**
  * 
@@ -40,7 +34,7 @@ public class Main {
 	}
 
 	public static String mostrarInformacionPantalla() {
-		return "El servidor se encuentra abierto en el puerto 5000\r\n" + "1. http://localhost:5000\r\n";
+		return "El servidor NO SEGURO se encuentra abierto en el puerto 5000\r\n" + "1. http://localhost:5000\r\n";
 	}
 
 	public static void abrirServidor(ContenedorDatos contenedor) {
