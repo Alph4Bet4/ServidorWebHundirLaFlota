@@ -41,7 +41,7 @@ public class Main {
 //	}
 
 	public static String mostrarInformacionPantalla() {
-		return "El servidor se encuentra abierto en el puerto 5000\r\n" + "1. http://localhost:5000\r\n";
+		return "El servidor se encuentra abierto en el puerto 5000\r\n" + "1. https://localhost:5000\r\n";
 	}
 
 //	public static void abrirServidor(ContenedorDatos contenedor) {
@@ -87,17 +87,16 @@ public class Main {
 		try {
 
 			// Carga el almacén de claves
-			char[] passphrase = "servpass".toCharArray();
+			char[] passphrase = "contraseniaCert".toCharArray();
 			KeyStore keyStore = KeyStore.getInstance("JKS");
-			keyStore.load(new FileInputStream("certificados/servidor/serverKey.jks"), passphrase);
+			keyStore.load(new FileInputStream("certificados/servidor/keystore.jks"), passphrase);
 
 			// Crea el administrador de claves
-			KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SUNX509"); // Puede que tenga que
-																							// cambiarse - 3072-bit -
+			KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
 			keyManagerFactory.init(keyStore, passphrase);
 
 			// Crea el administrador de confianza
-			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SUNX509");
+			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
 			trustManagerFactory.init(keyStore);
 
 			// Configura el contexto SSL
@@ -106,10 +105,10 @@ public class Main {
 
 			// Crea el server socket seguro
 			SSLServerSocketFactory sslServerSocketFactory = sslContext.getServerSocketFactory();
-
 			SSLServerSocket sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(5000);
 
-			mostrarInformacionPantalla();
+			System.out.println(mostrarInformacionPantalla());
+			
 			while (true) {
 				SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();
 

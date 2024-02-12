@@ -1,7 +1,7 @@
 /**
  * 
  */
-package PaginaWeb;
+package MainGet_Post;
 
 import java.io.BufferedReader;
 import java.io.File;
