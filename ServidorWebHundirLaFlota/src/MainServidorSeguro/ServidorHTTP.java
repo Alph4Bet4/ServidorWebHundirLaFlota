@@ -18,6 +18,7 @@ import javax.net.ssl.SSLSocket;
 import Clases.Barco;
 import Clases.Partida;
 import Clases.Tablero;
+import Clases.Usuario;
 import ContenedorGet_Post.ContenedorDatos;
 import PaginaWeb.Mensajes;
 
@@ -40,6 +41,7 @@ public class ServidorHTTP {
 		String peticionAMostrar;
 		StringBuilder sb = new StringBuilder();
 		String longitudContenido = null;
+		String nombreUsuarioCompleto, nombreUsuario, contraseniaUsuarioCompleto, contraseniaUsuario;
 		try {
 			InputStreamReader flujoEntrada = new InputStreamReader(conexion.getInputStream());
 			BufferedReader lector = new BufferedReader(flujoEntrada);
@@ -64,9 +66,9 @@ public class ServidorHTTP {
 					}
 				}
 			} catch (Exception e) {
-				//Nada
+				// Nada
 			}
-			
+
 			System.out.println("");
 
 			if (longitudContenido != null) {
@@ -76,12 +78,37 @@ public class ServidorHTTP {
 				while ((caracter = lector.read()) != -1 && cantidadLeido > 1) {
 					sb.append((char) caracter);
 					cantidadLeido--;
-					System.out.println("Char: " + caracter);
-					System.out.println("Cantidad " + cantidadLeido);
 
 				}
 				sb.append((char) caracter);
 				System.out.println(sb); // TODO borrar
+			}
+
+			if (longitudContenido != null) {
+				// Comprobamos si es un inicio de sesión
+				if (sb.toString().contains("Usuario")) {
+					String delimitadorVariables = "&";
+					String delimitadorValores = "=";
+
+					String[] datos = sb.toString().split(delimitadorVariables);
+
+					// Capturamos el valor del nombre
+					nombreUsuarioCompleto = datos[0];
+					nombreUsuario = nombreUsuarioCompleto.split(delimitadorValores)[1];
+
+					// Capturamos el valor de la contrasenia
+					contraseniaUsuarioCompleto = datos[1];
+					contraseniaUsuario = contraseniaUsuarioCompleto.split(delimitadorValores)[1];
+
+					ConexionABBDD conexionABBDD = new ConexionABBDD();
+
+					Usuario usuario = conexionABBDD.buscarUsuario(nombreUsuario, contraseniaUsuario);
+					ArrayList<Partida> listaPartidasAcabadas = new ArrayList<>();
+
+					listaPartidasAcabadas = conexionABBDD.buscarInformacionSobrePartidasAcabadasPorUnUsuario(usuario);
+
+					this.contenedorDatos.setListaPartidasTerminadas(listaPartidasAcabadas);
+				}
 			}
 
 			comprobarPeticion(peticion, escritor, sb.toString());
@@ -103,32 +130,30 @@ public class ServidorHTTP {
 				peticion = peticion.substring(3, peticion.lastIndexOf("HTTP"));
 				System.out.println("\t\t\t\t\tPeticion: " + peticion); // TODO borrar
 
-				if (peticion.length() == 0 || peticion.equals("/") || peticion.equals("/index")) {
-					mostrarIndex(peticion, escritor);
+				if (peticion.length() == 0 || peticion.equals("/")) {
+					mostrarInicioSesion(peticion, escritor);
 
-				} else if (peticion.equals("/ListaPartidasGet")) {
-					mostrarPartidasTerminadasGet(peticion, escritor);
+				} else if (peticion.equals("/ListaPartidasPost")) {
+					mostrarPartidasTerminadasPost(lineaPost, escritor);
 
 				} else if (peticion.split(separador)[0].equals("/Partida")) {
 					// Cortamos para ver el valor de la ID
 					valorID = peticion.substring(19);
 					verPartidaTerminada(peticion, escritor, Integer.parseInt(valorID));
-
-				} else if (peticion.equals("/ListaPartidasPost")) {
-					mostrarPartidasTerminadasPost(lineaPost, escritor);
-
 				}
 
 			} else if (peticion.startsWith("POST")) {
 				// Cortamos para ver la peticion
 				peticion = peticion.substring(4, peticion.lastIndexOf("HTTP"));
 				System.out.println("\t\t\t\t\tPeticion: " + peticion); // TODO limpiar cosas
-
-				if (peticion.equals("/Partida")) {
+				
+				if (peticion.equals("/ListaPartidasPost")) {
+					mostrarPartidasTerminadasPost(lineaPost, escritor);
+					
+				} else if (peticion.equals("/Partida")) {
 					valorID = lineaPost.substring(10);
 					System.out.println(valorID);
 					verPartidaTerminada(peticion, escritor, Integer.parseInt(valorID));
-
 				}
 
 			}
@@ -144,14 +169,14 @@ public class ServidorHTTP {
 	 * @param peticion
 	 * @param escritor
 	 */
-	public static void mostrarIndex(String peticion, PrintWriter escritor) {
+	public static void mostrarInicioSesion(String peticion, PrintWriter escritor) {
 		FileReader ficheroALeer = null;
 		BufferedReader lector = null;
 		String linea = "";
 		String html = "";
 
 		try {
-			ficheroALeer = new FileReader("index.html");
+			ficheroALeer = new FileReader("inicioSesion.html");
 			lector = new BufferedReader(ficheroALeer);
 
 			while ((linea = lector.readLine()) != null) {
@@ -159,8 +184,6 @@ public class ServidorHTTP {
 					html = html.concat(linea);
 				}
 			}
-
-			System.out.println(html); // TODO hay un error en el html, me muestra "</"
 
 			enviarInformacionPantalla(html, escritor);
 
@@ -380,7 +403,7 @@ public class ServidorHTTP {
 						}
 					}
 					// El jugador 2 hace disparos en el tablero 1
-					for (String disparos : partidaActual.getTableroJugador1().getPosicionesDisparoJugador1()) {
+					for (String disparos : partidaActual.getTableroJugador1().getPosicionesDisparoJugador1()) { //TODO arreglar los disparos que se ven en ambos iguales
 						if (posicionActual.equals(disparos)) {
 							isCasillaDisparada = true;
 							break;
@@ -449,7 +472,7 @@ public class ServidorHTTP {
 			}
 			html = html.concat("</table>");
 			html = html.concat("<p>Ganador: " + partidaActual.getNombreJugadorGanador() + "</p>");
-			html = html.concat("<p><a href=\"/index\">Indice</a></p>");
+			html = html.concat("<p><a href=\"/ListaPartidasPost\">Lista Partidas</a></p>");
 
 			html = html.concat("</body>");
 			html = html.concat("</html>");

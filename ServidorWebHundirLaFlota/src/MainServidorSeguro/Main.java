@@ -4,11 +4,17 @@
 package MainServidorSeguro;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.KeyManagementException;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 
 import javax.net.ssl.SSLServerSocketFactory;
@@ -23,70 +29,30 @@ import ContenedorGet_Post.ContenedorDatos;
  */
 public class Main {
 
-//	/**
-//	 * @param args
-//	 */
-//	public static void main(String[] args) {
-//
-//		
-//		ContenedorDatos contenedorDatos = new ContenedorDatos();
-//		ArrayList<Partida> listaPartidas = new ArrayList<>();
-//		System.out.println(mostrarInformacionPantalla());
-//		ConexionABBDD conexionBBDD = new ConexionABBDD();
-//
-//		listaPartidas = conexionBBDD.buscarInformacionSobrePartidasTerminadas();
-//		contenedorDatos.setListaPartidasTerminadas(listaPartidas);
-//		
-//		abrirServidor(contenedorDatos);
-//	}
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
 
-	public static String mostrarInformacionPantalla() {
-		return "El servidor se encuentra abierto en el puerto 5000\r\n" + "1. https://localhost:5000\r\n";
+		
+		ContenedorDatos contenedorDatos = new ContenedorDatos();
+		ArrayList<Partida> listaPartidas = new ArrayList<>();
+		System.out.println(mostrarInformacionPantalla());
+		ConexionABBDD conexionBBDD = new ConexionABBDD();
+
+		listaPartidas = conexionBBDD.buscarInformacionSobrePartidasTerminadas();
+		
+		abrirServidor(contenedorDatos);
 	}
 
-//	public static void abrirServidor(ContenedorDatos contenedor) {
-//		SSLServerSocketFactory servidorSeguroFactory = null;
-//		ServerSocket servidor = null;
-//		try {
-//			System.setProperty("javax.net.ssl.keyStore", "certificados/servidor/serverKey.jks");
-//			System.setProperty("javax.net.ssl.keyStorePassword", "servpass");
-//			System.setProperty("javax.net.ssl.trustStore", "certificados/servidor/serverTrustedCerts.jks");
-//			System.setProperty("javax.net.ssl.trustStorePassword", "servpass");
-//		} catch (Exception e) {
-//			System.out.println("Error leyendo los certificados");
-//		}
-//		try {
-//			// Abrimos el servidor - Seguro
-//			servidorSeguroFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-//			servidor = servidorSeguroFactory.createServerSocket(5000);
-//
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//
-//		while (true) {
-//			Socket conexion = null;
-//
-//			try {
-//				// Aceptamos las conexiones - Seguro // En
-//				// "https://chuidiang.org/index.php?title=Socket_SSL_con_Java#" se encuentra una
-//				// buena guía de como usar
-//				conexion = servidor.accept();
-//
-//				HiloCliente hiloCliente = new HiloCliente(conexion, contenedor);
-//				hiloCliente.start();
-//
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//
-//	}
+	public static String mostrarInformacionPantalla() {
+		return "El servidor SEGURO se encuentra abierto en el puerto 5000\r\n" + "1. https://localhost:5000\r\n";
+	}
 
-	public static void main(String[] args) {
+	public static void abrirServidor(ContenedorDatos contenedor) {
+		// Carga el almacén de claves
+		SSLServerSocket sslServerSocket;
 		try {
-
-			// Carga el almacén de claves
 			char[] passphrase = "contraseniaCert".toCharArray();
 			KeyStore keyStore = KeyStore.getInstance("JKS");
 			keyStore.load(new FileInputStream("certificados/servidor/keystore.jks"), passphrase);
@@ -105,19 +71,36 @@ public class Main {
 
 			// Crea el server socket seguro
 			SSLServerSocketFactory sslServerSocketFactory = sslContext.getServerSocketFactory();
-			SSLServerSocket sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(5000);
-
-			System.out.println(mostrarInformacionPantalla());
+			sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(5000);
+			
 			
 			while (true) {
-				SSLSocket sslSocket = (SSLSocket) sslServerSocket.accept();
+				SSLSocket sslSocket = null;
 
-				ContenedorDatos contenedor = null;
-				HiloCliente hiloCliente = new HiloCliente(sslSocket, contenedor);
-				hiloCliente.start();
+				try {
+					sslSocket = (SSLSocket) sslServerSocket.accept();
+
+					HiloCliente hiloCliente = new HiloCliente(sslSocket, contenedor);
+					hiloCliente.start();
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-
-		} catch (Exception e) {
+			
+		} catch (UnrecoverableKeyException e) {
+			e.printStackTrace();
+		} catch (KeyManagementException e) {
+			e.printStackTrace();
+		} catch (KeyStoreException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (CertificateException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

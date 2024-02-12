@@ -1,7 +1,7 @@
 /**
  * 
  */
-package Consultas;
+package MainServidorSeguro;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -31,7 +31,7 @@ public class ConexionABBDD {
 	 * @param contraseña
 	 * @return
 	 */
-	public int buscarUsuario(String nombre, String contraseña) {
+	public Usuario buscarUsuario(String nombre, String contraseña) {
 		// Abrimos la conexión
 		try {
 			conexion = DriverManager.getConnection(this.conexionString + this.nombreBaseDatos, this.usuario,
@@ -65,7 +65,7 @@ public class ConexionABBDD {
 
 				usuario = new Usuario(idUsuario, nombreUsuario, contrasenia, partidasJugadas, puntuacion);
 
-				return idUsuario;
+				
 			} catch (Exception e) {
 				System.out.println("- No se ha encontrado un usuario con ese nombre");
 			} finally {
@@ -87,7 +87,7 @@ public class ConexionABBDD {
 			System.out.println("- Ha ocurrido un error en buscarUsuario");
 		}
 
-		return 0;
+		return usuario;
 	}
 	
 	/**
@@ -449,7 +449,7 @@ public class ConexionABBDD {
 	}
 	
 	
-	public ArrayList<Partida> buscarInformacionSobrePartidasAcabadasPorUnUsuario(int idUsuario) {
+	public ArrayList<Partida> buscarInformacionSobrePartidasAcabadasPorUnUsuario(Usuario usuarioPropio) {
 		ArrayList<Partida> listaPartidas = new ArrayList<Partida>();
 		// Abrimos la conexión
 		try {
@@ -462,6 +462,7 @@ public class ConexionABBDD {
 		if (conexion != null) {
 			PreparedStatement query = null;
 			ResultSet resultado = null;
+			int idUsuario = usuarioPropio.getIdJugador();
 			int idTablero = 0;
 			int idUsuarioEnemigo = 0;
 			int idPartida = 0;
@@ -470,20 +471,21 @@ public class ConexionABBDD {
 			boolean isTerminada = false;
 			int movimientosTotales = 0;
 			Usuario usuarioEnemigo;
-			Usuario usuarioPropio;
+			Tablero nuevoTablero = null;
+			Partida nuevaPartida = null;
+			String lugarJugador = "";
 			Tablero tableroJugador1 = null;
 			Tablero tableroJugador2 = null;
-			Partida nuevaPartida = null;
 			String lugarJugadorPropio = "";
 			String lugarJugadorEnemigo = "";
 			String jugadorGanador;
 
 			try {
-				query = conexion.prepareStatement("SELECT * FROM hundirlaflota.partida WHERE isTerminada = 1 AND idJugador1 = ? OR idJugador2 = ?;");
+				query = conexion.prepareStatement(
+						"SELECT * FROM hundirlaflota.partida WHERE isTerminada = 1 AND (idJugador1 = ? OR idJugador2 = ?)");
 				query.setInt(1, idUsuario);
 				query.setInt(2, idUsuario);
-				
-				
+
 				resultado = query.executeQuery();
 
 				// Recorremos las partidas
@@ -496,26 +498,29 @@ public class ConexionABBDD {
 					if (resultado.getInt(5) == 0 ? (isTerminada = false) : (isTerminada = true))
 						;
 					movimientosTotales = resultado.getInt(6);
-
-					lugarJugadorPropio = "izq";
-					lugarJugadorEnemigo = "der";
-					
-					
-					usuarioPropio = buscarUsuarioBuscandoPorID(idJugadorPropio);
-
-					usuarioEnemigo = buscarUsuarioBuscandoPorID(idJugadorEnemigo);
-
 					jugadorGanador = resultado.getString(7);
 
-					tableroJugador1 = buscarInformacionTablero(idTablero, idJugadorEnemigo, idJugadorPropio,
-							lugarJugadorPropio);
-					
-					tableroJugador2 = buscarInformacionTablero(idTablero, idJugadorPropio, idJugadorEnemigo,
-							lugarJugadorPropio);
+					if (idUsuario == idJugadorPropio) {
+						usuarioEnemigo = buscarUsuarioBuscandoPorID(idJugadorEnemigo);
+						idJugadorEnemigo = usuarioEnemigo.getIdJugador();
+						tableroJugador1 = buscarInformacionTablero(idTablero, idJugadorPropio, idJugadorEnemigo,
+								lugarJugadorPropio);
+						tableroJugador2 = buscarInformacionTablero(idTablero, idJugadorEnemigo, idJugadorPropio,
+								lugarJugadorPropio);
+						lugarJugador = "izq";
+					} else {
+						usuarioEnemigo = buscarUsuarioBuscandoPorID(idJugadorPropio);
+						idJugadorEnemigo = usuarioEnemigo.getIdJugador();
+						lugarJugador = "der";
+						tableroJugador2 = buscarInformacionTablero(idTablero, idJugadorPropio, idJugadorEnemigo,
+								lugarJugadorPropio);
+						tableroJugador1 = buscarInformacionTablero(idTablero, idJugadorEnemigo, idJugadorPropio,
+								lugarJugadorPropio);
+						
+					}
 
 					nuevaPartida = new Partida(idPartida, tableroJugador1, tableroJugador2, usuarioPropio, usuarioEnemigo,
 							movimientosTotales, isTerminada, jugadorGanador);
-					
 					listaPartidas.add(nuevaPartida);
 				}
 

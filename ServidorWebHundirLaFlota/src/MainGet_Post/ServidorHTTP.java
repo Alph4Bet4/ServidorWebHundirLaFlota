@@ -74,8 +74,6 @@ public class ServidorHTTP {
 				while ((caracter = lector.read()) != -1 && cantidadLeido > 1) {
 					sb.append((char) caracter);
 					cantidadLeido--;
-					System.out.println("Char: " + caracter);
-					System.out.println("Cantidad " + cantidadLeido);
 
 				}
 				sb.append((char) caracter);
@@ -158,7 +156,6 @@ public class ServidorHTTP {
 				}
 			}
 
-			System.out.println(html); // TODO hay un error en el html, me muestra "</"
 
 			enviarInformacionPantalla(html, escritor);
 
