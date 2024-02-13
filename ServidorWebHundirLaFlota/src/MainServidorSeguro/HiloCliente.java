@@ -8,7 +8,6 @@ import java.net.Socket;
 
 import javax.net.ssl.SSLSocket;
 
-import Contenedor.ContenedorDatos;
 
 /**
  * 

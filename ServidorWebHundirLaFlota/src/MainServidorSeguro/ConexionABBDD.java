@@ -65,7 +65,6 @@ public class ConexionABBDD {
 
 				usuario = new Usuario(idUsuario, nombreUsuario, contrasenia, partidasJugadas, puntuacion);
 
-				
 			} catch (Exception e) {
 				System.out.println("- No se ha encontrado un usuario con ese nombre");
 			} finally {
@@ -89,7 +88,7 @@ public class ConexionABBDD {
 
 		return usuario;
 	}
-	
+
 	/**
 	 * Método que recibe un nombre y devuelve un usuario, principalmente usado para
 	 * crear partidas
@@ -126,7 +125,7 @@ public class ConexionABBDD {
 				contrasenia = "vacio"; // Por tema de seguridad no lo añadimos
 				partidasJugadas = resultado.getInt(4);
 				puntuacion = resultado.getInt(5);
-				
+
 				usuario = new Usuario(idUsuario, nombreUsuario, contrasenia, partidasJugadas, puntuacion);
 
 			} catch (Exception e) {
@@ -179,6 +178,7 @@ public class ConexionABBDD {
 			ArrayList<String> listaDisparosUsuarioPropio = new ArrayList<String>();
 			ArrayList<String> listaDisparosUsuarioEnemigo = new ArrayList<String>();
 			ArrayList<Barco> listaBarcos = new ArrayList<Barco>();
+			ArrayList<Barco> listaBarcosEnemigo = new ArrayList<Barco>();
 			Tablero nuevoTablero = null;
 
 			try {
@@ -196,15 +196,17 @@ public class ConexionABBDD {
 
 					numBarcosRestantesJugadorPropio = resultado.getInt(4);
 					numBarcosRestantesJugadorEnemigo = resultado.getInt(5);
-					
+
 					listaDisparosUsuarioPropio = buscarInformacionDisparos(idUsuarioPropio, idTablero);
-					
-					listaDisparosUsuarioEnemigo = buscarInformacionDisparos(idUsuarioEnemigo, idTablero);
+
+					listaDisparosUsuarioEnemigo = buscarInformacionDisparos(idUsuarioPropio, idTablero);
 
 					listaBarcos = buscarInformacionBarco(idTablero, idUsuarioPropio);
 
-					nuevoTablero = new Tablero(idTablero, listaBarcos, listaDisparosUsuarioPropio,
-							listaDisparosUsuarioEnemigo, isTurnoJugadorEnemigo, numBarcosRestantesJugadorPropio);
+					listaBarcosEnemigo = buscarInformacionBarco(idTablero, idUsuarioEnemigo);
+					
+					nuevoTablero = new Tablero(idTablero, listaBarcos, listaBarcosEnemigo, listaDisparosUsuarioPropio,
+							listaDisparosUsuarioEnemigo, isTurnoJugadorEnemigo, numBarcosRestantesJugadorEnemigo);
 				}
 
 				return nuevoTablero;
@@ -256,7 +258,7 @@ public class ConexionABBDD {
 				query.setInt(2, idUsuario);
 
 				resultado = query.executeQuery();
-				
+
 				while (resultado.next()) {
 					posicionDisparo = resultado.getString(4);
 					listaDisparos.add(posicionDisparo);
@@ -406,8 +408,7 @@ public class ConexionABBDD {
 
 					lugarJugadorPropio = "izq";
 					lugarJugadorEnemigo = "der";
-					
-					
+
 					usuarioPropio = buscarUsuarioBuscandoPorID(idJugadorPropio);
 
 					usuarioEnemigo = buscarUsuarioBuscandoPorID(idJugadorEnemigo);
@@ -416,13 +417,13 @@ public class ConexionABBDD {
 
 					tableroJugador1 = buscarInformacionTablero(idTablero, idJugadorEnemigo, idJugadorPropio,
 							lugarJugadorPropio);
-					
+
 					tableroJugador2 = buscarInformacionTablero(idTablero, idJugadorPropio, idJugadorEnemigo,
 							lugarJugadorPropio);
 
-					nuevaPartida = new Partida(idPartida, tableroJugador1, tableroJugador2, usuarioPropio, usuarioEnemigo,
-							movimientosTotales, isTerminada, jugadorGanador);
-					
+					nuevaPartida = new Partida(idPartida, tableroJugador1, tableroJugador2, usuarioPropio,
+							usuarioEnemigo, movimientosTotales, isTerminada, jugadorGanador);
+
 					listaPartidas.add(nuevaPartida);
 				}
 
@@ -447,8 +448,7 @@ public class ConexionABBDD {
 
 		return null;
 	}
-	
-	
+
 	public ArrayList<Partida> buscarInformacionSobrePartidasAcabadasPorUnUsuario(Usuario usuarioPropio) {
 		ArrayList<Partida> listaPartidas = new ArrayList<Partida>();
 		// Abrimos la conexión
@@ -503,24 +503,28 @@ public class ConexionABBDD {
 					if (idUsuario == idJugadorPropio) {
 						usuarioEnemigo = buscarUsuarioBuscandoPorID(idJugadorEnemigo);
 						idJugadorEnemigo = usuarioEnemigo.getIdJugador();
-						tableroJugador1 = buscarInformacionTablero(idTablero, idJugadorPropio, idJugadorEnemigo,
-								lugarJugadorPropio);
-						tableroJugador2 = buscarInformacionTablero(idTablero, idJugadorEnemigo, idJugadorPropio,
-								lugarJugadorPropio);
 						lugarJugador = "izq";
+
+						tableroJugador1 = buscarInformacionTablero(idTablero, idJugadorPropio, idJugadorEnemigo,
+								lugarJugador);
+						tableroJugador2 = buscarInformacionTablero(idTablero, idJugadorEnemigo, idJugadorPropio,
+								lugarJugador);
+
 					} else {
 						usuarioEnemigo = buscarUsuarioBuscandoPorID(idJugadorPropio);
 						idJugadorEnemigo = usuarioEnemigo.getIdJugador();
 						lugarJugador = "der";
-						tableroJugador2 = buscarInformacionTablero(idTablero, idJugadorPropio, idJugadorEnemigo,
-								lugarJugadorPropio);
+
 						tableroJugador1 = buscarInformacionTablero(idTablero, idJugadorEnemigo, idJugadorPropio,
-								lugarJugadorPropio);
-						
+								lugarJugador);
+						tableroJugador2 = buscarInformacionTablero(idTablero, idJugadorPropio, idJugadorEnemigo,
+								lugarJugador);
+
 					}
 
-					nuevaPartida = new Partida(idPartida, tableroJugador1, tableroJugador2, usuarioPropio, usuarioEnemigo,
-							movimientosTotales, isTerminada, jugadorGanador);
+					nuevaPartida = new Partida(idPartida, tableroJugador1, tableroJugador2, usuarioPropio,
+							usuarioEnemigo, movimientosTotales, isTerminada, jugadorGanador);
+
 					listaPartidas.add(nuevaPartida);
 				}
 

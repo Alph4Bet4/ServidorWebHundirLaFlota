@@ -122,9 +122,7 @@ public class ServidorHTTP {
 
 				if (peticion.equals("/Partida")) {
 					valorID = lineaPost.substring(10);
-					if (valorID.isEmpty()) {
-						verPartidaTerminada(peticion, escritor, Integer.parseInt(valorID));
-					}
+					verPartidaTerminada(peticion, escritor, Integer.parseInt(valorID));
 
 				}
 
@@ -234,7 +232,6 @@ public class ServidorHTTP {
 			html = html.concat("</form>");
 
 			html = html.concat("</body>" + "</html>");
-			System.out.println(html);
 			enviarInformacionPantalla(html, escritor);
 
 		} catch (FileNotFoundException e) {
@@ -312,7 +309,6 @@ public class ServidorHTTP {
 			html = html.concat("</form>");
 
 			html = html.concat("</body>" + "</html>");
-			System.out.println(html);
 			enviarInformacionPantalla(html, escritor);
 
 		} catch (FileNotFoundException e) {
@@ -368,7 +364,7 @@ public class ServidorHTTP {
 					String posicionActual = letraActual + numeroActual;
 
 					// Comprueba la posición con los barcos que el usuario había colocado
-					for (Barco barco : partidaActual.getTableroJugador1().getListaPosicionesBarco()) {
+					for (Barco barco : partidaActual.getTableroJugador2().getListaPosicionesBarco()) {
 						if (posicionActual.equals(barco.getPosicion())) {
 							isBarcoEnEsaPosicion = true;
 							break;
@@ -414,7 +410,7 @@ public class ServidorHTTP {
 
 					String posicionActual = letraActual + numeroActual;
 					// Comprueba la posición con los barcos que el usuario había colocado
-					for (Barco barco : partidaActual.getTableroJugador2().getListaPosicionesBarco()) {
+					for (Barco barco : partidaActual.getTableroJugador1().getListaPosicionesBarco()) {
 						if (posicionActual.equals(barco.getPosicion())) {
 							isBarcoEnEsaPosicion = true;
 							break;

@@ -15,11 +15,6 @@ import java.util.ArrayList;
 
 import javax.net.ssl.SSLSocket;
 
-import Clases.Barco;
-import Clases.Partida;
-import Clases.Tablero;
-import Clases.Usuario;
-import Contenedor.ContenedorDatos;
 import PaginaWeb.Mensajes;
 
 /**
@@ -108,26 +103,14 @@ public class ServidorHTTP {
 
 						listaPartidasAcabadas = conexionABBDD
 								.buscarInformacionSobrePartidasAcabadasPorUnUsuario(usuario);
-						// TODO borrar tableros
-						System.out.println("\t\t\t\tTableroJugador 1 - 14 "
-								+ listaPartidasAcabadas.get(3).getTableroJugador1().getListaPosicionesBarco());
-						for (Barco barcoJugador1 : listaPartidasAcabadas.get(3).getTableroJugador1()
-								.getListaPosicionesBarco()) {
-							System.out.println(barcoJugador1.getPosicion());
-						}
 
-						System.out.println("\t\t\t\tTableroJugador 2 - 14 "
-								+ listaPartidasAcabadas.get(3).getTableroJugador2().getListaPosicionesBarco());
-						for (Barco barcoJugador2 : listaPartidasAcabadas.get(3).getTableroJugador2()
-								.getListaPosicionesBarco()) {
-							System.out.println(barcoJugador2.getPosicion());
-						}
-
-						this.contenedorDatos.setListaPartidasTerminadas(listaPartidasAcabadas);
+						contenedorDatos.setListaPartidasTerminadas(listaPartidasAcabadas);
 					}
 				}
 			} catch (Exception e) {
 				System.out.println("Un usuario que no pertenecia a la BBDD intentó hacer una conexion");
+				enviarInformacionPantalla(Mensajes.pgError, escritor);
+				e.printStackTrace();
 			}
 
 			comprobarPeticion(peticion, escritor, sb.toString());
@@ -171,8 +154,12 @@ public class ServidorHTTP {
 
 				} else if (peticion.equals("/Partida")) {
 					valorID = lineaPost.substring(10);
-					System.out.println(valorID);
-					verPartidaTerminada(peticion, escritor, Integer.parseInt(valorID));
+					if (!valorID.isEmpty()) {
+						verPartidaTerminada(peticion, escritor, Integer.parseInt(valorID));
+					} else {
+						enviarInformacionPantalla(Mensajes.pgError, escritor);
+					}
+					
 				}
 
 			}
@@ -422,7 +409,8 @@ public class ServidorHTTP {
 						}
 					}
 					// El jugador 2 hace disparos en el tablero 1
-					for (String disparos : partidaActual.getTableroJugador1().getPosicionesDisparoJugador2()) { 
+					for (String disparos : partidaActual.getTableroJugador1().getPosicionesDisparoJugador1()) { 
+						System.out.println("\t\t\t\t\t\t\t DIsparooooos tab 1:::::: -------------" + disparos);
 						if (posicionActual.equals(disparos)) {
 							isCasillaDisparada = true;
 							break;
@@ -446,7 +434,7 @@ public class ServidorHTTP {
 				html = html.concat("</tr>");
 			}
 			html = html.concat("</table>");
-
+System.out.println(); //TODO borrar
 			// Tabla jugador 2
 			html = html.concat("<p style=\"text-align: left; font-size: 20px;\">Jugador 2: "
 					+ partidaActual.getJugador2().getNombre() + "</p>");
@@ -468,7 +456,8 @@ public class ServidorHTTP {
 						}
 					}
 					// El jugador 1 hace disparos en el tablero 2
-					for (String disparos : partidaActual.getTableroJugador2().getPosicionesDisparoJugador2()) {
+					for (String disparos : partidaActual.getTableroJugador2().getPosicionesDisparoJugador1()) {
+						System.out.println("\t\t\t\t\t\t\t DIsparooooos tab 2 :::::: -------------" + disparos);
 						if (posicionActual.equals(disparos)) {
 							isCasillaDisparada = true;
 							break;

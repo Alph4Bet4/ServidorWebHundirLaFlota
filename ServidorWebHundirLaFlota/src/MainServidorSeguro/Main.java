@@ -21,8 +21,6 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.*;
 
 import Clases.Partida;
-import Contenedor.ContenedorDatos;
-import MainGet_Post.ConexionABBDD;
 
 /**
  * 
@@ -33,15 +31,9 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
-		
 		ContenedorDatos contenedorDatos = new ContenedorDatos();
 		ArrayList<Partida> listaPartidas = new ArrayList<>();
-		System.out.println(mostrarInformacionPantalla());
-		ConexionABBDD conexionBBDD = new ConexionABBDD();
-
-		listaPartidas = conexionBBDD.buscarInformacionSobrePartidasTerminadas();
-		
+		System.out.println(mostrarInformacionPantalla());		
 		abrirServidor(contenedorDatos);
 	}
 
