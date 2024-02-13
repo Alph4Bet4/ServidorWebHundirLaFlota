@@ -21,8 +21,8 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.*;
 
 import Clases.Partida;
-import Consultas.ConexionABBDD;
-import ContenedorGet_Post.ContenedorDatos;
+import Contenedor.ContenedorDatos;
+import MainGet_Post.ConexionABBDD;
 
 /**
  * 

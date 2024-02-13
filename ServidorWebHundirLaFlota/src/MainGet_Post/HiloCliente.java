@@ -6,7 +6,7 @@ package MainGet_Post;
 import java.io.IOException;
 import java.net.Socket;
 
-import ContenedorGet_Post.ContenedorDatos;
+import Contenedor.ContenedorDatos;
 
 /**
  * 

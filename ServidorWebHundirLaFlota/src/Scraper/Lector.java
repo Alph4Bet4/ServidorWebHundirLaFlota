@@ -1,7 +1,7 @@
 /**
  * 
  */
-package LectorScraper;
+package Scraper;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

@@ -19,7 +19,7 @@ import Clases.Barco;
 import Clases.Partida;
 import Clases.Tablero;
 import Clases.Usuario;
-import ContenedorGet_Post.ContenedorDatos;
+import Contenedor.ContenedorDatos;
 import PaginaWeb.Mensajes;
 
 /**
@@ -84,31 +84,50 @@ public class ServidorHTTP {
 				System.out.println(sb); // TODO borrar
 			}
 
-			if (longitudContenido != null) {
-				// Comprobamos si es un inicio de sesión
-				if (sb.toString().contains("Usuario")) {
-					String delimitadorVariables = "&";
-					String delimitadorValores = "=";
+			try {
+				if (longitudContenido != null) {
+					// Comprobamos si es un inicio de sesión
+					if (sb.toString().contains("Usuario")) {
+						String delimitadorVariables = "&";
+						String delimitadorValores = "=";
 
-					String[] datos = sb.toString().split(delimitadorVariables);
+						String[] datos = sb.toString().split(delimitadorVariables);
 
-					// Capturamos el valor del nombre
-					nombreUsuarioCompleto = datos[0];
-					nombreUsuario = nombreUsuarioCompleto.split(delimitadorValores)[1];
+						// Capturamos el valor del nombre
+						nombreUsuarioCompleto = datos[0];
+						nombreUsuario = nombreUsuarioCompleto.split(delimitadorValores)[1];
 
-					// Capturamos el valor de la contrasenia
-					contraseniaUsuarioCompleto = datos[1];
-					contraseniaUsuario = contraseniaUsuarioCompleto.split(delimitadorValores)[1];
+						// Capturamos el valor de la contrasenia
+						contraseniaUsuarioCompleto = datos[1];
+						contraseniaUsuario = contraseniaUsuarioCompleto.split(delimitadorValores)[1];
 
-					ConexionABBDD conexionABBDD = new ConexionABBDD();
+						ConexionABBDD conexionABBDD = new ConexionABBDD();
 
-					Usuario usuario = conexionABBDD.buscarUsuario(nombreUsuario, contraseniaUsuario);
-					ArrayList<Partida> listaPartidasAcabadas = new ArrayList<>();
+						Usuario usuario = conexionABBDD.buscarUsuario(nombreUsuario, contraseniaUsuario);
+						ArrayList<Partida> listaPartidasAcabadas = new ArrayList<>();
 
-					listaPartidasAcabadas = conexionABBDD.buscarInformacionSobrePartidasAcabadasPorUnUsuario(usuario);
+						listaPartidasAcabadas = conexionABBDD
+								.buscarInformacionSobrePartidasAcabadasPorUnUsuario(usuario);
+						// TODO borrar tableros
+						System.out.println("\t\t\t\tTableroJugador 1 - 14 "
+								+ listaPartidasAcabadas.get(3).getTableroJugador1().getListaPosicionesBarco());
+						for (Barco barcoJugador1 : listaPartidasAcabadas.get(3).getTableroJugador1()
+								.getListaPosicionesBarco()) {
+							System.out.println(barcoJugador1.getPosicion());
+						}
 
-					this.contenedorDatos.setListaPartidasTerminadas(listaPartidasAcabadas);
+						System.out.println("\t\t\t\tTableroJugador 2 - 14 "
+								+ listaPartidasAcabadas.get(3).getTableroJugador2().getListaPosicionesBarco());
+						for (Barco barcoJugador2 : listaPartidasAcabadas.get(3).getTableroJugador2()
+								.getListaPosicionesBarco()) {
+							System.out.println(barcoJugador2.getPosicion());
+						}
+
+						this.contenedorDatos.setListaPartidasTerminadas(listaPartidasAcabadas);
+					}
 				}
+			} catch (Exception e) {
+				System.out.println("Un usuario que no pertenecia a la BBDD intentó hacer una conexion");
 			}
 
 			comprobarPeticion(peticion, escritor, sb.toString());
@@ -146,10 +165,10 @@ public class ServidorHTTP {
 				// Cortamos para ver la peticion
 				peticion = peticion.substring(4, peticion.lastIndexOf("HTTP"));
 				System.out.println("\t\t\t\t\tPeticion: " + peticion); // TODO limpiar cosas
-				
+
 				if (peticion.equals("/ListaPartidasPost")) {
 					mostrarPartidasTerminadasPost(lineaPost, escritor);
-					
+
 				} else if (peticion.equals("/Partida")) {
 					valorID = lineaPost.substring(10);
 					System.out.println(valorID);
@@ -403,7 +422,7 @@ public class ServidorHTTP {
 						}
 					}
 					// El jugador 2 hace disparos en el tablero 1
-					for (String disparos : partidaActual.getTableroJugador1().getPosicionesDisparoJugador1()) { //TODO arreglar los disparos que se ven en ambos iguales
+					for (String disparos : partidaActual.getTableroJugador1().getPosicionesDisparoJugador2()) { 
 						if (posicionActual.equals(disparos)) {
 							isCasillaDisparada = true;
 							break;
@@ -449,7 +468,7 @@ public class ServidorHTTP {
 						}
 					}
 					// El jugador 1 hace disparos en el tablero 2
-					for (String disparos : partidaActual.getTableroJugador2().getPosicionesDisparoJugador1()) {
+					for (String disparos : partidaActual.getTableroJugador2().getPosicionesDisparoJugador2()) {
 						if (posicionActual.equals(disparos)) {
 							isCasillaDisparada = true;
 							break;
@@ -459,6 +478,8 @@ public class ServidorHTTP {
 					// Si hay un barco y no está disparado lo coloca
 					if (isBarcoEnEsaPosicion == true && isCasillaDisparada == false) {
 						html = html.concat("<td style=\"background-color: brown;\">" + "Barco" + "</td>");
+					} else if (isBarcoEnEsaPosicion == false && isCasillaDisparada == true) {
+						html = html.concat("<td style=\"background-color: red;\">" + "X" + "</td>");
 					} else if (isCasillaDisparada == true) {
 						// Si hay un disparo lo coloca
 						html = html.concat("<td style=\"background-color: lime;\">" + "X" + "</td>");

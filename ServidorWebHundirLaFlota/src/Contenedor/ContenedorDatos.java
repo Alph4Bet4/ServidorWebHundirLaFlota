@@ -1,7 +1,7 @@
 /**
  * 
  */
-package ContenedorGet_Post;
+package Contenedor;
 
 import java.util.ArrayList;
 

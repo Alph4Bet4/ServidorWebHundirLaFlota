@@ -10,8 +10,7 @@ import java.util.ArrayList;
 
 
 import Clases.Partida;
-import Consultas.ConexionABBDD;
-import ContenedorGet_Post.ContenedorDatos;
+import Contenedor.ContenedorDatos;
 
 /**
  * 

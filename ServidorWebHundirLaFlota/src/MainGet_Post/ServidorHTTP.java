@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import Clases.Barco;
 import Clases.Partida;
 import Clases.Tablero;
-import ContenedorGet_Post.ContenedorDatos;
+import Contenedor.ContenedorDatos;
 import PaginaWeb.Mensajes;
 
 /**
@@ -62,9 +62,9 @@ public class ServidorHTTP {
 					}
 				}
 			} catch (Exception e) {
-				//Nada
+				// Nada
 			}
-			
+
 			System.out.println("");
 
 			if (longitudContenido != null) {
@@ -122,8 +122,9 @@ public class ServidorHTTP {
 
 				if (peticion.equals("/Partida")) {
 					valorID = lineaPost.substring(10);
-					System.out.println(valorID);
-					verPartidaTerminada(peticion, escritor, Integer.parseInt(valorID));
+					if (valorID.isEmpty()) {
+						verPartidaTerminada(peticion, escritor, Integer.parseInt(valorID));
+					}
 
 				}
 
@@ -155,7 +156,6 @@ public class ServidorHTTP {
 					html = html.concat(linea);
 				}
 			}
-
 
 			enviarInformacionPantalla(html, escritor);
 
@@ -431,6 +431,8 @@ public class ServidorHTTP {
 					// Si hay un barco y no está disparado lo coloca
 					if (isBarcoEnEsaPosicion == true && isCasillaDisparada == false) {
 						html = html.concat("<td style=\"background-color: brown;\">" + "Barco" + "</td>");
+					} else if (isBarcoEnEsaPosicion == false && isCasillaDisparada == true) {
+						html = html.concat("<td style=\"background-color: red;\">" + "X" + "</td>");
 					} else if (isCasillaDisparada == true) {
 						// Si hay un disparo lo coloca
 						html = html.concat("<td style=\"background-color: lime;\">" + "X" + "</td>");

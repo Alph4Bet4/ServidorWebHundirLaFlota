@@ -1,7 +1,7 @@
 /**
  * 
  */
-package Consultas;
+package MainGet_Post;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
