@@ -264,7 +264,8 @@ public class ServidorHTTP {
 				html = html.concat(
 						"<option value=\"" + partida.getIdPartida() + "\">" + partida.getIdPartida() + "</option>");
 			}
-			html = html.concat("<input type=\"submit\" value=\"Ver partida\">");
+			html = html.concat("</select>");
+			html = html.concat("<input type=\"submit\" value=\"Ver partida\" />");
 			html = html.concat("</form>");
 
 			html = html.concat("</body>" + "</html>");
@@ -342,7 +343,9 @@ public class ServidorHTTP {
 				html = html.concat(
 						"<option value=\"" + partida.getIdPartida() + "\">" + partida.getIdPartida() + "</option>");
 			}
-			html = html.concat("<input type=\"submit\" value=\"Ver partida\">");
+			html = html.concat("</select>");
+			html = html.concat("<input type=\"submit\" value=\"Ver partida\" />");
+			
 			html = html.concat("</form>");
 
 			html = html.concat("</body>" + "</html>");

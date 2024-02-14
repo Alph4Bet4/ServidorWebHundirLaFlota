@@ -38,9 +38,9 @@ public class Lector {
 	 * @param conexionURL
 	 * @return
 	 */
-	public static StringBuffer leerBody(HttpURLConnection conexionURL) {
+	public static StringBuilder leerBody(HttpURLConnection conexionURL) {
 		String lineaEntrada;
-		StringBuffer cadenaString = new StringBuffer();
+		StringBuilder cadenaString = new StringBuilder();
 		try {
 			BufferedReader flujoEntrada = new BufferedReader(
 					new InputStreamReader(conexionURL.getInputStream(), "UTF-8"));
@@ -58,23 +58,8 @@ public class Lector {
 			int contentLength, String body) {
 		StringBuilder sb = new StringBuilder();
 		
-		System.out.println("Todos los headers leidos");
-		System.out.println(header);
-		System.out.println();
-		
-		System.out.println("Header Content-Type");
-		System.out.println(contentType);
-		System.out.println("Header contentLength");
-		System.out.println(contentLength);
-		
-		System.out.println("Body Leido:");
-		System.out.println(body);
-		
 		sb.append(body);
-		
-		body = body.replaceAll("<[^>]*>", "");
-		System.out.println("Body leido eliminando todas las etiquetas");
-		System.out.println(body);
+
 		
 		return sb;
 		
