@@ -49,19 +49,15 @@ public class Main {
 			KeyStore keyStore = KeyStore.getInstance("JKS");
 			keyStore.load(new FileInputStream("certificados/servidor/keystore.jks"), passphrase);
 
-			// Crea el administrador de claves
 			KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
 			keyManagerFactory.init(keyStore, passphrase);
 
-			// Crea el administrador de confianza
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
 			trustManagerFactory.init(keyStore);
 
-			// Configura el contexto SSL
 			SSLContext sslContext = SSLContext.getInstance("TLS");
 			sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
 
-			// Crea el server socket seguro
 			SSLServerSocketFactory sslServerSocketFactory = sslContext.getServerSocketFactory();
 			sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(5000);
 			
