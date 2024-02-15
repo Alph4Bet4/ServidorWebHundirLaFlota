@@ -250,9 +250,6 @@ public class Main {
 					if (!elemento.getTextContent().equals(verde) && !elemento.getTextContent().equals(marron)
 							&& !elemento.getTextContent().equals(rojo) && !elemento.getTextContent().equals(indice)) {
 						System.out.println(elemento.getTextContent());
-						if (elemento.getTextContent().contains("Ganador:")) {
-							//TODO preguntar a sergio si quiere que le digamos la cantidad de veces que gana
-						}
 					}
 
 				}
