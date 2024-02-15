@@ -53,7 +53,7 @@ public class ConexionABBDD {
 				query = conexion.prepareStatement(
 						"SELECT * FROM hundirlaflota.usuarios WHERE NombreUsuario = ? AND Contrasenia = ?;");
 				query.setString(1, nombre);
-				query.setString(2, contraseña);
+				query.setInt(2, contraseña.hashCode());
 
 				resultado = query.executeQuery();
 				resultado.next();

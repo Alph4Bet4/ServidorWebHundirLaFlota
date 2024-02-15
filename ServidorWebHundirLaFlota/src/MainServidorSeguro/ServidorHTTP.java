@@ -21,6 +21,8 @@ import PaginaWeb.Mensajes;
  * 
  */
 public class ServidorHTTP {
+	//Contraseñas: root: root, AdrianP: adrian, Javier: javier, Prueba: prueba, Pedro: pedro
+	
 	private static ContenedorDatos contenedorDatos;
 
 	public ServidorHTTP(ContenedorDatos contenedorDatos) {
@@ -95,7 +97,7 @@ public class ServidorHTTP {
 						// Capturamos el valor de la contrasenia
 						contraseniaUsuarioCompleto = datos[1];
 						contraseniaUsuario = contraseniaUsuarioCompleto.split(delimitadorValores)[1];
-
+						
 						ConexionABBDD conexionABBDD = new ConexionABBDD();
 
 						Usuario usuario = conexionABBDD.buscarUsuario(nombreUsuario, contraseniaUsuario);
@@ -166,6 +168,7 @@ public class ServidorHTTP {
 
 		} else {
 			System.out.println("Alguien ha buscado una página que no existe");
+			enviarInformacionPantalla(Mensajes.pgError, escritor);
 		}
 	}
 
@@ -269,7 +272,6 @@ public class ServidorHTTP {
 			html = html.concat("</form>");
 
 			html = html.concat("</body>" + "</html>");
-			System.out.println(html);
 			enviarInformacionPantalla(html, escritor);
 
 		} catch (FileNotFoundException e) {
@@ -349,7 +351,6 @@ public class ServidorHTTP {
 			html = html.concat("</form>");
 
 			html = html.concat("</body>" + "</html>");
-			System.out.println(html);
 			enviarInformacionPantalla(html, escritor);
 
 		} catch (FileNotFoundException e) {
@@ -413,7 +414,6 @@ public class ServidorHTTP {
 					}
 					// El jugador 2 hace disparos en el tablero 1
 					for (String disparos : partidaActual.getTableroJugador1().getPosicionesDisparoJugador1()) { 
-						System.out.println("\t\t\t\t\t\t\t DIsparooooos tab 1:::::: -------------" + disparos);
 						if (posicionActual.equals(disparos)) {
 							isCasillaDisparada = true;
 							break;
@@ -437,7 +437,6 @@ public class ServidorHTTP {
 				html = html.concat("</tr>");
 			}
 			html = html.concat("</table>");
-System.out.println(); //TODO borrar
 			// Tabla jugador 2
 			html = html.concat("<p style=\"text-align: left; font-size: 20px;\">Jugador 2: "
 					+ partidaActual.getJugador2().getNombre() + "</p>");
@@ -460,7 +459,6 @@ System.out.println(); //TODO borrar
 					}
 					// El jugador 1 hace disparos en el tablero 2
 					for (String disparos : partidaActual.getTableroJugador2().getPosicionesDisparoJugador1()) {
-						System.out.println("\t\t\t\t\t\t\t DIsparooooos tab 2 :::::: -------------" + disparos);
 						if (posicionActual.equals(disparos)) {
 							isCasillaDisparada = true;
 							break;
