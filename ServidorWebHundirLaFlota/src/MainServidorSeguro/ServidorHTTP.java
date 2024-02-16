@@ -22,11 +22,17 @@ import PaginaWeb.Mensajes;
  */
 public class ServidorHTTP {
 	//Contraseñas: root: root, AdrianP: adrian, Javier: javier, Prueba: prueba, Pedro: pedro
+	//Usuarios en lista negra: Javier, AdrianP, Prueba
+	private static ArrayList<String> listaNegra = new ArrayList<String>();
+	
 	
 	private static ContenedorDatos contenedorDatos;
 
 	public ServidorHTTP(ContenedorDatos contenedorDatos) {
 		ServidorHTTP.contenedorDatos = contenedorDatos;
+		listaNegra.add("Javier");
+		listaNegra.add("AdrianP");
+		listaNegra.add("Prueba");
 	}
 
 	public static ContenedorDatos getContenedorDatos() {
@@ -99,7 +105,13 @@ public class ServidorHTTP {
 						contraseniaUsuario = contraseniaUsuarioCompleto.split(delimitadorValores)[1];
 						
 						ConexionABBDD conexionABBDD = new ConexionABBDD();
-						System.out.println(contraseniaUsuario.hashCode());
+						
+						for (String usuarioListaNegra : listaNegra) {
+							if (nombreUsuario.equals(usuarioListaNegra)) {
+								throw new Exception();
+							}
+						}
+						
 						Usuario usuario = conexionABBDD.buscarUsuario(nombreUsuario, contraseniaUsuario);
 						ArrayList<Partida> listaPartidasAcabadas = new ArrayList<>();
 
@@ -107,6 +119,7 @@ public class ServidorHTTP {
 								.buscarInformacionSobrePartidasAcabadasPorUnUsuario(usuario);
 
 						contenedorDatos.setListaPartidasTerminadas(listaPartidasAcabadas);
+						
 					}
 				}
 			} catch (Exception e) {
