@@ -99,7 +99,7 @@ public class ServidorHTTP {
 						contraseniaUsuario = contraseniaUsuarioCompleto.split(delimitadorValores)[1];
 						
 						ConexionABBDD conexionABBDD = new ConexionABBDD();
-
+						System.out.println(contraseniaUsuario.hashCode());
 						Usuario usuario = conexionABBDD.buscarUsuario(nombreUsuario, contraseniaUsuario);
 						ArrayList<Partida> listaPartidasAcabadas = new ArrayList<>();
 

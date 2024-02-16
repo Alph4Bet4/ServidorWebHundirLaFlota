@@ -19,7 +19,7 @@ public class ConexionABBDD {
 
 	private String nombreBaseDatos = "hundirlaflota";
 	private String usuario = "root";
-	private String contrasenia = "root";
+	private String contrasenia = "MANAGER";
 	private String conexionString = "jdbc:mysql://localhost:3306/";
 	private Connection conexion;
 
